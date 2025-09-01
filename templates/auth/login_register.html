@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Smart Fuel Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e293b;
+        }
+        
+        .auth-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 48px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            width: 100%;
+            max-width: 480px;
+            margin: 20px;
+        }
+        
+        .logo-section {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            font-size: 24px;
+            color: #1c4e80;
+            margin-bottom: 8px;
+        }
+        
+        .tagline {
+            color: #64748b;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        
+        .form-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        
+        .form-header p {
+            color: #64748b;
+            font-size: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            background: white;
+            transition: all 0.2s;
+            color: #1e293b;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .password-wrapper {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #64748b;
+            font-size: 18px;
+            padding: 4px;
+        }
+        
+        .password-toggle:hover {
+            color: #3b82f6;
+        }
+        
+        .btn-primary {
+            width: 100%;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 20px;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .form-footer {
+            text-align: center;
+            margin-top: 24px;
+        }
+        
+        .form-footer p {
+            color: #64748b;
+            font-size: 14px;
+        }
+        
+        .form-link {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .form-link:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            background: #fecaca;
+            color: #991b1b;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            border-left: 4px solid #ef4444;
+        }
+        
+        .success-message {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            border-left: 4px solid #10b981;
+        }
+        
+        .form-tabs {
+            display: flex;
+            margin-bottom: 32px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 4px;
+        }
+        
+        .form-tab {
+            flex: 1;
+            padding: 12px 16px;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #64748b;
+        }
+        
+        .form-tab.active {
+            background: white;
+            color: #3b82f6;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-content {
+            display: none;
+        }
+        
+        .form-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 24px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border-left: 4px solid #10b981;
+        }
+        
+        .feature-icon {
+            font-size: 20px;
+            color: #10b981;
+        }
+        
+        .feature-text {
+            flex: 1;
+        }
+        
+        .feature-text h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+        
+        .feature-text p {
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        /* Form Validation Errors */
+        .field-error {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        
+        .form-input.error {
+            border-color: #ef4444;
+        }
+        
+        /* Loading State */
+        .btn-primary:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 640px) {
+            .auth-container {
+                padding: 32px 24px;
+                margin: 16px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-header h1 {
+                font-size: 24px;
+            }
+            
+            .logo {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <!-- Logo Section -->
+        <div class="logo-section">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="#1C4E80"/>
+                    <text x="6" y="22" fill="white" font-family="Inter" font-weight="700" font-size="12">⛽</text>
+                </svg>
+                Smart Fuel Management
+            </div>
+            <p class="tagline">AI-Powered Fleet Tracking</p>
+        </div>
+
+        <!-- Form Tabs -->
+        <div class="form-tabs">
+            <div class="form-tab active" onclick="showLogin()">Login</div>
+            <div class="form-tab" onclick="showRegister()">Register</div>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Login Form -->
+        <div class="form-content active" id="loginForm">
+            <div class="form-header">
+                <h1>Welcome Back</h1>
+                <p>Sign in to your account</p>
+            </div>
+
+            <form method="post" action="{% url 'accounts:login' %}" id="loginFormElement">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="login">
+                
+                <div class="form-group">
+                    <label class="form-label" for="username">Email or Username</label>
+                    <input type="text" id="username" name="username" class="form-input" 
+                           placeholder="Enter your email or username" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" name="password" class="form-input" 
+                               placeholder="Enter your password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="loginButton">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="form-footer">
+                <p>Don't have an admin account? <a class="form-link" onclick="showRegister()">Register here</a></p>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-text">
+                        <h4>Real-Time Analytics</h4>
+                        <p>Live fuel consumption tracking</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">💰</div>
+                    <div class="feature-text">
+                        <h4>Cost Reduction</h4>
+                        <p>Save up to 25% on fuel costs</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🤖</div>
+                    <div class="feature-text">
+                        <h4>AI OCR Processing</h4>
+                        <p>Automatic receipt scanning</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📱</div>
+                    <div class="feature-text">
+                        <h4>Mobile App</h4>
+                        <p>Upload receipts on the go</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Register Form -->
+        <div class="form-content" id="registerForm">
+            <div class="form-header">
+                <h1>Create Admin Account</h1>
+                <p>Register as fleet administrator</p>
+            </div>
+
+            <form method="post" action="{% url 'accounts:register' %}" id="registerFormElement">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="register">
+
+                <div class="form-group">
+                    <label class="form-label" for="reg_email">Email Address</label>
+                    <input type="email" id="reg_email" name="email" class="form-input" 
+                           placeholder="Enter your email address" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="reg_username">Username</label>
+                    <input type="text" id="reg_username" name="username" class="form-input" 
+                           placeholder="Choose a username" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="reg_first_name">First Name</label>
+                    <input type="text" id="reg_first_name" name="first_name" class="form-input" 
+                           placeholder="Enter your first name" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="reg_last_name">Last Name</label>
+                    <input type="text" id="reg_last_name" name="last_name" class="form-input" 
+                           placeholder="Enter your last name" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="reg_company">Company Name</label>
+                    <input type="text" id="reg_company" name="company_name" class="form-input" 
+                           placeholder="Enter your company name" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="reg_phone">Phone Number (Optional)</label>
+                    <input type="tel" id="reg_phone" name="phone" class="form-input" 
+                        placeholder="Enter your phone number (optional)">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="reg_password">Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="reg_password" name="password1" class="form-input" 
+                               placeholder="Create a strong password" required minlength="8">
+                        <button type="button" class="password-toggle" onclick="togglePassword('reg_password')">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="reg_confirm_password">Confirm Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="reg_confirm_password" name="password2" class="form-input" 
+                               placeholder="Confirm your password" required minlength="8">
+                        <button type="button" class="password-toggle" onclick="togglePassword('reg_confirm_password')">
+                            👁️
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="registerButton">
+                    Create Admin Account
+                </button>
+            </form>
+
+            <div class="form-footer">
+                <p>Already have an account? <a class="form-link" onclick="showLogin()">Sign in here</a></p>
+                <p style="margin-top: 12px; font-size: 12px; color: #64748b;">
+                    Note: Drivers will be created by admins in the dashboard
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showLogin() {
+            document.getElementById('loginForm').classList.add('active');
+            document.getElementById('registerForm').classList.remove('active');
+            document.querySelectorAll('.form-tab')[0].classList.add('active');
+            document.querySelectorAll('.form-tab')[1].classList.remove('active');
+            history.pushState(null, null, '/');
+        }
+
+        function showRegister() {
+            document.getElementById('registerForm').classList.add('active');
+            document.getElementById('loginForm').classList.remove('active');
+            document.querySelectorAll('.form-tab')[1].classList.add('active');
+            document.querySelectorAll('.form-tab')[0].classList.remove('active');
+            history.pushState(null, null, '{% url "accounts:register" %}');
+        }
+
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const button = field.nextElementSibling;
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                button.textContent = '🙈';
+            } else {
+                field.type = 'password';
+                button.textContent = '👁️';
+            }
+        }
+
+        // Form validation
+        function validateForm(formId) {
+            const form = document.getElementById(formId);
+            const inputs = form.querySelectorAll('input[required]');
+            let isValid = true;
+
+            inputs.forEach(input => {
+                input.classList.remove('error');
+                const existingError = input.parentNode.querySelector('.field-error');
+                if (existingError) {
+                    existingError.remove();
+                }
+
+                if (!input.value.trim()) {
+                    input.classList.add('error');
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'field-error';
+                    errorMsg.textContent = 'This field is required';
+                    input.parentNode.appendChild(errorMsg);
+                    isValid = false;
+                }
+            });
+
+            // Password match validation for register form
+            if (formId === 'registerFormElement') {
+                const password = document.getElementById('reg_password').value;
+                const confirmPassword = document.getElementById('reg_confirm_password').value;
+                
+                if (password !== confirmPassword) {
+                    const confirmField = document.getElementById('reg_confirm_password');
+                    confirmField.classList.add('error');
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'field-error';
+                    errorMsg.textContent = 'Passwords do not match';
+                    confirmField.parentNode.appendChild(errorMsg);
+                    isValid = false;
+                }
+
+                if (password.length < 8) {
+                    const passwordField = document.getElementById('reg_password');
+                    passwordField.classList.add('error');
+                    const errorMsg = document.createElement('div');
+                    errorMsg.className = 'field-error';
+                    errorMsg.textContent = 'Password must be at least 8 characters';
+                    passwordField.parentNode.appendChild(errorMsg);
+                    isValid = false;
+                }
+            }
+
+            return isValid;
+        }
+
+        // Form submission with loading state
+        document.getElementById('loginFormElement').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (validateForm('loginFormElement')) {
+                const button = document.getElementById('loginButton');
+                button.disabled = true;
+                button.innerHTML = '<span class="loading"></span>Signing In...';
+                
+                // Submit the form
+                this.submit();
+            }
+        });
+
+        document.getElementById('registerFormElement').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (validateForm('registerFormElement')) {
+                const button = document.getElementById('registerButton');
+                button.disabled = true;
+                button.innerHTML = '<span class="loading"></span>Creating Account...';
+                
+                // Submit the form
+                this.submit();
+            }
+        });
+
+        // Handle URL changes
+        window.addEventListener('popstate', function() {
+            if (window.location.pathname.includes('/register/')) {
+                showRegister();
+            } else {
+                showLogin();
+            }
+        });
+
+        // Show register form if URL contains /register/
+        if (window.location.pathname.includes('/register/')) {
+            showRegister();
+        }
+
+        // Remove error styling on input focus
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.classList.remove('error');
+                const errorMsg = this.parentNode.querySelector('.field-error');
+                if (errorMsg) {
+                    errorMsg.remove();
+                }
+            });
+        });
+
+        // Auto-dismiss success/error messages after 5 seconds
+        setTimeout(() => {
+            const messages = document.querySelectorAll('.error-message, .success-message');
+            messages.forEach(message => {
+                message.style.opacity = '0';
+                message.style.transform = 'translateY(-10px)';
+                setTimeout(() => message.remove(), 300);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

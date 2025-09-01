@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drivers - Smart Fuel Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Use the same CSS from your dashboard template */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+        
+        /* Navigation - Same as Dashboard */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 20px;
+            color: #1c4e80;
+            text-decoration: none;
+        }
+        
+        .navbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .nav-link {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+            text-decoration: none;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 94px 24px 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .content-header {
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-title h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .page-title p {
+            color: #64748b;
+            font-size: 16px;
+        }
+        
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 24px 24px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+        }
+        
+        .card-body {
+            padding: 24px;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .btn-outline {
+            background: white;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .btn-outline:hover {
+            background: #f8fafc;
+            color: #1e293b;
+            text-decoration: none;
+        }
+        
+        /* Search and Filters */
+        .filters {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .filter-select {
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+        
+        /* Table */
+        .drivers-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .drivers-table th,
+        .drivers-table td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .drivers-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+        
+        .drivers-table td {
+            font-size: 14px;
+        }
+        
+        .drivers-table tr:hover {
+            background: #f8fafc;
+        }
+        
+        /* Status badges */
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-badge.active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-badge.inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .status-badge.suspended {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 24px;
+        }
+        
+        .pagination a,
+        .pagination span {
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .pagination a {
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .pagination a:hover {
+            background: #f1f5f9;
+        }
+        
+        .pagination .current {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: #64748b;
+        }
+        
+        .empty-state-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            opacity: 0.5;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 94px 16px 24px;
+            }
+            
+            .content-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 16px;
+            }
+            
+            .filters {
+                flex-direction: column;
+            }
+            
+            .drivers-table {
+                font-size: 12px;
+            }
+            
+            .drivers-table th,
+            .drivers-table td {
+                padding: 12px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="/dashboard/" class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="#1C4E80"/>
+                    <text x="6" y="22" fill="white" font-family="Inter" font-weight="700" font-size="12">⛽</text>
+                </svg>
+                <span>Smart Fuel Management</span>
+            </a>
+        </div>
+        
+        <div class="navbar-right">
+            <a href="/dashboard/" class="nav-link">Dashboard</a>
+            <a href="/drivers/" class="nav-link">Drivers</a>
+            <a href="/vehicles/" class="nav-link">Vehicles</a>
+            <a href="/accounts/logout/" class="nav-link">Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Content Header -->
+        <div class="content-header">
+            <div class="page-title">
+                <h1>
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    Drivers Management
+                </h1>
+                <p>Manage your company drivers and their information</p>
+            </div>
+            <a href="{% url 'create_driver' %}" class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M12 5v14m-7-7h14"></path>
+                </svg>
+                Add New Driver
+            </a>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Filters -->
+        <div class="card">
+            <div class="card-body">
+                <form method="GET" class="filters">
+                    <input type="text" name="search" value="{{ search_query }}" 
+                           placeholder="Search drivers, license, email..." class="search-input">
+                    <select name="status" class="filter-select">
+                        <option value="">All Status</option>
+                        <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+                        <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+                        <option value="suspended" {% if status_filter == 'suspended' %}selected{% endif %}>Suspended</option>
+                    </select>
+                    <button type="submit" class="btn btn-outline">Filter</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Drivers Table -->
+        <div class="card">
+            <div class="card-header">
+                <h3>All Drivers ({{ total_drivers }})</h3>
+            </div>
+            <div class="card-body">
+                {% if drivers %}
+                    <table class="drivers-table">
+                        <thead>
+                            <tr>
+                                <th>Driver Name</th>
+                                <th>Email</th>
+                                <th>License Number</th>
+                                <th>Phone</th>
+                                <th>Status</th>
+                                <th>Hire Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for driver in drivers %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ driver.full_name }}</strong>
+                                    </td>
+                                    <td>{{ driver.user.email }}</td>
+                                    <td>{{ driver.license_number }}</td>
+                                    <td>{{ driver.phone|default:"—" }}</td>
+                                    <td>
+                                        <span class="status-badge {{ driver.status }}">
+                                            {{ driver.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ driver.hire_date|date:"M d, Y" }}</td>
+                                    <td>
+                                        <a href="{% url 'driver_detail' driver.id %}" class="btn btn-outline">
+                                            View
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <!-- Pagination -->
+                    {% if drivers.has_other_pages %}
+                        <div class="pagination">
+                            {% if drivers.has_previous %}
+                                <a href="?page={{ drivers.previous_page_number }}&search={{ search_query }}&status={{ status_filter }}">
+                                    Previous
+                                </a>
+                            {% endif %}
+                            
+                            {% for num in drivers.paginator.page_range %}
+                                {% if drivers.number == num %}
+                                    <span class="current">{{ num }}</span>
+                                {% else %}
+                                    <a href="?page={{ num }}&search={{ search_query }}&status={{ status_filter }}">
+                                        {{ num }}
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if drivers.has_next %}
+                                <a href="?page={{ drivers.next_page_number }}&search={{ search_query }}&status={{ status_filter }}">
+                                    Next
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="empty-state">
+                        <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        <h3>No Drivers Found</h3>
+                        <p>{% if search_query %}No drivers match your search criteria.{% else %}You haven't added any drivers yet.{% endif %}</p>
+                        {% if not search_query %}
+                            <a href="{% url 'create_driver' %}" class="btn btn-primary" style="margin-top: 16px;">
+                                Add Your First Driver
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</body>
+</html>

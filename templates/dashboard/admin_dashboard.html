@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Fuel Management - Fleet Analytics Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+        
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 20px;
+            color: #1c4e80;
+        }
+        
+        .navbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: #f1f5f9;
+        }
+        
+        .user-avatar img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .user-role {
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 94px 24px 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        
+        .page-title h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+        
+        .page-title p {
+            color: #64748b;
+            font-size: 16px;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .date-range {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #475569;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #475569;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .action-btn:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            color: #1e293b;
+            text-decoration: none;
+        }
+        
+        .action-btn.primary {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        .action-btn.primary:hover {
+            background: #2563eb;
+            color: white;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .stat-card.primary .stat-icon {
+            background: #dbeafe;
+            color: #3b82f6;
+        }
+        
+        .stat-card.success .stat-icon {
+            background: #d1fae5;
+            color: #10b981;
+        }
+        
+        .stat-card.warning .stat-icon {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+        
+        .stat-card.info .stat-icon {
+            background: #e0e7ff;
+            color: #6366f1;
+        }
+        
+        .stat-content {
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+        
+        .stat-change {
+            font-size: 12px;
+            font-weight: 500;
+            color: #10b981;
+        }
+        
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .chart-header {
+            padding: 24px 24px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .chart-title h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+        
+        .chart-title p {
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        .chart-actions {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .chart-filter {
+            padding: 6px 12px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .chart-filter.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        .chart-container {
+            padding: 24px;
+            height: 300px;
+        }
+        
+        /* Bottom Grid */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 24px;
+        }
+        
+        .activity-card, .fleet-status-card, .drivers-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            padding: 24px 24px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .view-all-btn {
+            font-size: 14px;
+            color: #3b82f6;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        /* Activity List */
+        .activity-list {
+            padding: 0 24px 24px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .activity-icon.success {
+            background: #10b981;
+        }
+        
+        .activity-icon.warning {
+            background: #f59e0b;
+        }
+        
+        .activity-icon.info {
+            background: #3b82f6;
+        }
+        
+        .activity-icon.error {
+            background: #ef4444;
+        }
+        
+        .activity-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+        
+        .activity-time {
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        /* Fleet Status */
+        .status-overview {
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+        
+        .status-circle {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+        
+        .circle-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        
+        .circle-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        
+        .circle-label {
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        .status-stats {
+            flex: 1;
+        }
+        
+        .status-stat {
+            margin-bottom: 16px;
+        }
+        
+        .status-count {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        
+        .status-label {
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        /* Drivers List */
+        .drivers-list {
+            padding: 0 24px 24px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .driver-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .driver-item:last-child {
+            border-bottom: none;
+        }
+        
+        .driver-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #dbeafe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+        }
+        
+        .driver-info {
+            flex: 1;
+        }
+        
+        .driver-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+        
+        .driver-stats {
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        .driver-badge {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .driver-badge.top {
+            background: #fbbf24;
+            color: #92400e;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .bottom-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 94px 16px 24px;
+            }
+            
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .bottom-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .status-overview {
+                flex-direction: column;
+                gap: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navbar -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="#1C4E80"/>
+                    <text x="6" y="22" fill="white" font-family="Inter" font-weight="700" font-size="12">⛽</text>
+                </svg>
+                <span class="logo-text">Smart Fuel Management</span>
+            </div>
+        </div>
+        
+        <div class="navbar-right">
+            <div class="user-menu">
+                <div class="user-avatar">
+                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" alt="User Avatar">
+                </div>
+                <div class="user-info">
+                    <div class="user-name">{{ user.username|title }}</div>
+                    <div class="user-role">{{ user.role|title|default:"Admin" }}</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-header">
+            <div class="page-title">
+                <h1>Fleet Dashboard</h1>
+                <p>Monitor your fuel consumption and fleet performance</p>
+            </div>
+            
+            <div class="header-actions">
+                <div class="date-range">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    <span>Last 90 days</span>
+                </div>
+                
+                <a href="/dashboard/analytics/" class="btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7,10 12,15 17,10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Export Report
+                </a>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <a href="/mobile/upload/" class="action-btn primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17,8 12,3 7,8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                Upload Receipt
+            </a>
+            <a href="/dashboard/vehicles/" class="action-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                Manage Vehicles
+            </a>
+            <a href="/dashboard/receipts/" class="action-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14,2 14,8 20,8"></polyline>
+                </svg>
+                View Receipts
+            </a>
+            <a href="/admin/" class="action-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33"></path>
+                </svg>
+                Django Admin
+            </a>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card primary">
+                <div class="stat-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ total_vehicles|default:"0" }}</div>
+                    <div class="stat-label">Total Vehicles</div>
+                    <div class="stat-change">Active in fleet</div>
+                </div>
+            </div>
+
+            <div class="stat-card success">
+                <div class="stat-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                        <path d="M2 17l10 5 10-5"></path>
+                        <path d="M2 12l10 5 10-5"></path>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ currency_symbol }}{{ total_amount_inr|default:"0"|floatformat:0 }}</div>
+                    <div class="stat-label">Fuel Cost (90 days)</div>
+                    <div class="stat-change">Total spending</div>
+                </div>
+            </div>
+
+            <div class="stat-card warning">
+                <div class="stat-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        <polyline points="3.27,6.96 12,12.01 20.73,6.96"></polyline>
+                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ total_liters|default:"0"|floatformat:0 }} {{ fuel_unit }}</div>
+                    <div class="stat-label">Fuel Consumed</div>
+                    <div class="stat-change">Total consumption</div>
+                </div>
+            </div>
+
+            <div class="stat-card info">
+                <div class="stat-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"></polyline>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ currency_symbol }}{{ avg_price_per_liter|default:"0"|floatformat:2 }}</div>
+                    <div class="stat-label">Avg Price/{{ fuel_unit }}</div>
+                    <div class="stat-change">Per liter cost</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Charts Row -->
+        <div class="charts-grid">
+            <!-- Fuel Consumption Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <h3>Daily Fuel Costs</h3>
+                        <p>Fuel spending trend over time ({{ currency_symbol }} INR)</p>
+                    </div>
+                    <div class="chart-actions">
+                        <button class="chart-filter" data-period="7d">7D</button>
+                        <button class="chart-filter active" data-period="30d">30D</button>
+                        <button class="chart-filter" data-period="90d">90D</button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="fuelChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Fleet Performance Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <h3>Receipts Processed</h3>
+                        <p>OCR processing status</p>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Row -->
+        <div class="bottom-grid">
+            <!-- Recent Activity -->
+            <div class="activity-card">
+                <div class="card-header">
+                    <h3>Recent Activity</h3>
+                    <button class="view-all-btn" onclick="window.location.href='/dashboard/receipts/'">View All</button>
+                </div>
+                <div class="activity-list">
+                    {% for receipt in recent_receipts %}
+                    <div class="activity-item">
+                        <div class="activity-icon {% if receipt.processing_status == 'processed' %}success{% elif receipt.processing_status == 'failed' %}error{% else %}info{% endif %}">
+                            {% if receipt.processing_status == 'processed' %}
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <polyline points="20,6 9,17 4,12"></polyline>
+                                </svg>
+                            {% elif receipt.processing_status == 'failed' %}
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                                </svg>
+                            {% else %}
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="10,8 16,12 10,16 10,8"></polyline>
+                                </svg>
+                            {% endif %}
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-text">Receipt #{{ receipt.id }} {{ receipt.processing_status }} - {{ receipt.vehicle.license_plate }}</div>
+                            <div class="activity-time">{{ receipt.created_at|timesince }} ago</div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="activity-item">
+                        <div class="activity-icon info">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-text">No recent activity</div>
+                            <div class="activity-time">Upload receipts to see activity</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Fleet Status -->
+            <div class="fleet-status-card">
+                <div class="card-header">
+                    <h3>Fleet Status</h3>
+                </div>
+                <div class="status-overview">
+                    <div class="status-circle">
+                        <svg width="120" height="120" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="50" fill="none" stroke="#f1f5f9" stroke-width="8"/>
+                            <circle cx="60" cy="60" r="50" fill="none" stroke="#10b981" stroke-width="8" 
+                                    stroke-dasharray="251.2" stroke-dashoffset="75.36" 
+                                    transform="rotate(-90 60 60)"/>
+                        </svg>
+                        <div class="circle-content">
+                            <div class="circle-value">{{ total_vehicles|default:"0" }}</div>
+                            <div class="circle-label">Active</div>
+                        </div>
+                    </div>
+                    <div class="status-stats">
+                        <div class="status-stat">
+                            <div class="status-count">{{ total_receipts_processed|default:"0" }}</div>
+                            <div class="status-label">Processed Receipts</div>
+                        </div>
+                        <div class="status-stat">
+                            <div class="status-count">{{ currency_symbol }}{{ monthly_amount|default:"0"|floatformat:0 }}</div>
+                            <div class="status-label">Monthly Cost</div>
+                        </div>
+                        <div class="status-stat">
+                            <div class="status-count">{{ monthly_liters|default:"0"|floatformat:0 }} {{ fuel_unit }}</div>
+                            <div class="status-label">Monthly Fuel</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Vehicles -->
+            <div class="drivers-card">
+                <div class="card-header">
+                    <h3>Top Consuming Vehicles</h3>
+                    <button class="view-all-btn" onclick="window.location.href='/dashboard/vehicles/'">View All</button>
+                </div>
+                <div class="drivers-list">
+                    {% for vehicle in vehicle_consumption %}
+                    <div class="driver-item">
+                        <div class="driver-avatar">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </div>
+                        <div class="driver-info">
+                            <div class="driver-name">{{ vehicle.license_plate }}</div>
+                            <div class="driver-stats">{{ vehicle.make }} {{ vehicle.model }} • {{ currency_symbol }}{{ vehicle.total_cost|floatformat:0 }} • {{ vehicle.total_fuel|floatformat:1 }}{{ fuel_unit }}</div>
+                        </div>
+                        <div class="driver-badge{% if forloop.first %} top{% endif %}">
+                            <span>#{{ forloop.counter }}</span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="driver-item">
+                        <div class="driver-info">
+                            <div class="driver-name">No vehicle data</div>
+                            <div class="driver-stats">Upload receipts to see top consuming vehicles</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Safely get data from Django context
+        const djangoData = {
+            totalReceiptsProcessed: {{ total_receipts_processed|default:0 }},
+            currency: '{{ currency_symbol|default:"₹"|escapejs }}'
+        };
+
+        // Load analytics data and render charts
+        fetch('/dashboard/analytics-data/')
+            .then(response => response.json())
+            .then(data => {
+                // Daily costs chart
+                const dailyCostsCtx = document.getElementById('fuelChart').getContext('2d');
+                new Chart(dailyCostsCtx, {
+                    type: 'line',
+                    data: {
+                        labels: data.daily_costs ? data.daily_costs.map(d => {
+                            const date = new Date(d.day);
+                            return date.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+                        }) : ['No data'],
+                        datasets: [{
+                            label: 'Daily Fuel Cost (₹)',
+                            data: data.daily_costs ? data.daily_costs.map(d => d.total_cost_inr || 0) : [0],
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: '#3b82f6',
+                            pointBorderWidth: 2,
+                            pointRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '₹' + value.toLocaleString('en-IN');
+                                    }
+                                },
+                                grid: {
+                                    color: '#f1f5f9'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Performance doughnut chart
+                const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+                new Chart(performanceCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Processed', 'Pending', 'Failed'],
+                        datasets: [{
+                            data: [
+                                djangoData.totalReceiptsProcessed,
+                                2,
+                                0
+                            ],
+                            backgroundColor: [
+                                '#10b981',
+                                '#f59e0b',
+                                '#ef4444'
+                            ],
+                            borderWidth: 0,
+                            cutout: '75%'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 20
+                                }
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => {
+                console.log('Chart data loading failed:', error);
+                
+                // Fallback charts with sample data
+                const dailyCostsCtx = document.getElementById('fuelChart').getContext('2d');
+                new Chart(dailyCostsCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5'],
+                        datasets: [{
+                            label: 'Daily Fuel Cost (₹)',
+                            data: [500, 750, 1200, 800, 950],
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+
+                const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+                new Chart(performanceCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Processed', 'Pending', 'Failed'],
+                        datasets: [{
+                            data: [djangoData.totalReceiptsProcessed || 1, 2, 0],
+                            backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+                            borderWidth: 0,
+                            cutout: '75%'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            });
+
+        // Chart filter functionality
+        document.querySelectorAll('.chart-filter').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.chart-filter').forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                console.log('Selected period:', this.dataset.period);
+                // Here you would typically reload chart data for the selected period
+            });
+        });
+    </script>
+</body>
+</html>

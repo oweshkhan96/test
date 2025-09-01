@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Dashboard - Smart Fuel Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+        
+        /* Navigation - Same as Dashboard */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 20px;
+            color: #1c4e80;
+            text-decoration: none;
+        }
+        
+        .navbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: #f1f5f9;
+        }
+        
+        .user-avatar img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .user-role {
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        .nav-link {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+            text-decoration: none;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 94px 24px 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .content-header {
+            margin-bottom: 32px;
+        }
+        
+        .page-title h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .page-title p {
+            color: #64748b;
+            font-size: 16px;
+        }
+        
+        /* Cards - Same styling as Dashboard */
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            padding: 24px 24px 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .card-header h3,
+        .card-header h4,
+        .card-header h5 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .card-body {
+            padding: 24px;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #475569;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .action-btn:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            color: #1e293b;
+            text-decoration: none;
+        }
+        
+        .action-btn.primary {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        .action-btn.primary:hover {
+            background: #2563eb;
+            color: white;
+        }
+        
+        .action-btn.success {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+        
+        .action-btn.success:hover {
+            background: #059669;
+            color: white;
+        }
+        
+        /* Vehicle Cards */
+        .vehicle-grid {
+            display: grid;
+            gap: 16px;
+        }
+        
+        .vehicle-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #10b981;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+        }
+        
+        .vehicle-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .vehicle-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .vehicle-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .vehicle-details {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .vehicle-details strong {
+            color: #374151;
+        }
+        
+        /* Status Badges */
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .status-badge.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-badge.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-badge.danger {
+            background: #fecaca;
+            color: #991b1b;
+        }
+        
+        .status-badge.info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .status-badge.secondary {
+            background: #f1f5f9;
+            color: #475569;
+        }
+        
+        /* Receipt List */
+        .receipt-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .receipt-item {
+            padding: 16px 0;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.2s;
+        }
+        
+        .receipt-item:last-child {
+            border-bottom: none;
+        }
+        
+        .receipt-item:hover {
+            background: #f8fafc;
+            margin: 0 -16px;
+            padding: 16px 16px;
+            border-radius: 8px;
+        }
+        
+        .receipt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .receipt-id {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 14px;
+        }
+        
+        .receipt-time {
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        .receipt-details {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+        
+        .receipt-details strong {
+            color: #374151;
+        }
+        
+        .receipt-footer {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 16px;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+        
+        .stat-value.primary { color: #3b82f6; }
+        .stat-value.success { color: #10b981; }
+        .stat-value.info { color: #6366f1; }
+        .stat-value.warning { color: #f59e0b; }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Empty States */
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: #64748b;
+        }
+        
+        .empty-state-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            opacity: 0.5;
+            color: #cbd5e1;
+        }
+        
+        .empty-state h5 {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .empty-state p {
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        /* Footer */
+        footer {
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            padding: 24px 0;
+            margin-top: 48px;
+            text-align: center;
+        }
+        
+        footer small {
+            color: #64748b;
+            font-size: 14px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 94px 16px 24px;
+            }
+            
+            .quick-actions {
+                flex-direction: column;
+            }
+            
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* Loading States */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navbar - Same as Dashboard -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="/dashboard/" class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="#1C4E80"/>
+                    <text x="6" y="22" fill="white" font-family="Inter" font-weight="700" font-size="12">⛽</text>
+                </svg>
+                <span>Smart Fuel Management</span>
+            </a>
+        </div>
+        
+        <div class="navbar-right">
+            <a href="/dashboard/" class="nav-link">Dashboard</a>
+            <a href="/admin/logout/" class="nav-link">Logout</a>
+            <div class="user-menu">
+                <div class="user-avatar">
+                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" alt="User Avatar">
+                </div>
+                <div class="user-info">
+                    <div class="user-name">{{ user.get_full_name|default:user.username }}</div>
+                    <div class="user-role">Driver</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-header">
+            <div class="page-title">
+                <h1>
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    Driver Dashboard
+                </h1>
+                <p>Manage your assigned vehicles and fuel receipts</p>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <a href="/mobile/upload/" class="action-btn success">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17,8 12,3 7,8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                📷 Upload Receipt
+            </a>
+            
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="main-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px;">
+            <!-- Assigned Vehicles -->
+            <div class="card fade-in">
+                <div class="card-header">
+                    <h4>🚗 Your Assigned Vehicles</h4>
+                </div>
+                <div class="card-body">
+                    {% if assigned_vehicles %}
+                        <div class="vehicle-grid">
+                            {% for vehicle in assigned_vehicles %}
+                                <div class="vehicle-card">
+                                    <div class="vehicle-header">
+                                        <div class="vehicle-title">
+                                            {{ vehicle.make }} {{ vehicle.model }}
+                                        </div>
+                                        <span class="status-badge success">Active</span>
+                                    </div>
+                                    <div class="vehicle-details">
+                                        <strong>License Plate:</strong> {{ vehicle.license_plate }}<br>
+                                        <strong>Fuel Type:</strong> {{ vehicle.get_fuel_type_display }}<br>
+                                        <strong>Tank Capacity:</strong> {{ vehicle.tank_capacity|default:"N/A" }} L<br>
+                                        <strong>Average Efficiency:</strong> {{ vehicle.average_mpg|default:"N/A" }} km/L
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <h5>No Vehicles Assigned</h5>
+                            <p>No vehicles have been assigned to you yet.</p>
+                            <p>Contact your fleet manager to assign vehicles.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Recent Receipts -->
+            <div class="card fade-in">
+                <div class="card-header">
+                    <h4>🧾 Recent Receipts (Last 7 Days)</h4>
+                </div>
+                <div class="card-body">
+                    {% if recent_receipts %}
+                        <div class="receipt-list">
+                            {% for receipt in recent_receipts %}
+                                <div class="receipt-item">
+                                    <div class="receipt-header">
+                                        <div class="receipt-id">Receipt #{{ receipt.id }}</div>
+                                        <div class="receipt-time">{{ receipt.created_at|timesince }} ago</div>
+                                    </div>
+                                    <div class="receipt-details">
+                                        <strong>Vehicle:</strong> {{ receipt.vehicle.license_plate }}<br>
+                                        {% if receipt.station_name %}
+                                            <strong>Station:</strong> {{ receipt.station_name }}<br>
+                                        {% endif %}
+                                        {% if receipt.total_amount %}
+                                            <strong>Amount:</strong> ₹{{ receipt.total_amount|floatformat:2 }}<br>
+                                        {% endif %}
+                                        {% if receipt.gallons %}
+                                            <strong>Fuel:</strong> {{ receipt.gallons|floatformat:1 }} L
+                                        {% endif %}
+                                    </div>
+                                    <div class="receipt-footer">
+                                        {% if receipt.processing_status == 'processed' %}
+                                            <span class="status-badge success">✅ Processed</span>
+                                        {% elif receipt.processing_status == 'pending' %}
+                                            <span class="status-badge warning">⏳ Processing</span>
+                                        {% elif receipt.processing_status == 'manual_review' %}
+                                            <span class="status-badge info">👁️ Manual Review</span>
+                                        {% elif receipt.processing_status == 'failed' %}
+                                            <span class="status-badge danger">❌ Failed</span>
+                                        {% else %}
+                                            <span class="status-badge secondary">{{ receipt.processing_status }}</span>
+                                        {% endif %}
+                                        
+                                        {% if receipt.confidence_score %}
+                                            <small style="color: #64748b;">
+                                                Confidence: {{ receipt.confidence_score|floatformat:1 }}%
+                                            </small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14,2 14,8 20,8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                            </svg>
+                            <h5>No Recent Receipts</h5>
+                            <p>No receipts uploaded in the last 7 days.</p>
+                            <a href="/mobile/upload/" class="action-btn success">
+                                Upload Your First Receipt
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Row -->
+        {% if recent_receipts %}
+        <div class="card fade-in">
+            <div class="card-header">
+                <h5>📈 Your Recent Activity Stats</h5>
+            </div>
+            <div class="card-body">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value primary">{{ recent_receipts|length }}</div>
+                        <div class="stat-label">Receipts Uploaded</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value success">{{ assigned_vehicles|length|default:0 }}</div>
+                        <div class="stat-label">Assigned Vehicles</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value info">
+                            {% with processed_count=0 %}
+                                {% for receipt in recent_receipts %}
+                                    {% if receipt.processing_status == 'processed' %}
+                                        {% with processed_count=processed_count|add:1 %}{% endwith %}
+                                    {% endif %}
+                                {% endfor %}
+                                {{ processed_count }}
+                            {% endwith %}
+                        </div>
+                        <div class="stat-label">Processed</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value warning">
+                            {% with pending_count=0 %}
+                                {% for receipt in recent_receipts %}
+                                    {% if receipt.processing_status == 'pending' %}
+                                        {% with pending_count=pending_count|add:1 %}{% endwith %}
+                                    {% endif %}
+                                {% endfor %}
+                                {{ pending_count }}
+                            {% endwith %}
+                        </div>
+                        <div class="stat-label">Pending</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div style="max-width: 1400px; margin: 0 auto; padding: 0 24px;">
+            <small>Smart Fuel Management Platform | AI-Powered Fleet Tracking</small>
+        </div>
+    </footer>
+
+    <script>
+        // Add loading animation to cards on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('fade-in');
+                }, index * 100);
+            });
+        });
+
+        // Auto-refresh page every 5 minutes to get latest receipt updates
+        setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                location.reload();
+            }
+        }, 300000); // 5 minutes
+    </script>
+</body>
+</html>

@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipts Management - Smart Fuel Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+        
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 20px;
+            color: #1c4e80;
+            text-decoration: none;
+        }
+        
+        .navbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .nav-link {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+        
+        .nav-link.primary {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .nav-link.primary:hover {
+            background: #2563eb;
+            color: white;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 94px 24px 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        
+        .page-title h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+        
+        .page-title p {
+            color: #64748b;
+            font-size: 16px;
+        }
+        
+        .page-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .btn-outline {
+            background: white;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .btn-outline:hover {
+            background: #f8fafc;
+            color: #1e293b;
+            text-decoration: none;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        /* Filters */
+        .filters-section {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+        }
+        
+        .filters-row {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .filter-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .filter-input, .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            min-width: 150px;
+        }
+        
+        .filter-input:focus, .filter-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Stats Cards */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        /* Table Card */
+        .table-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            padding: 24px 24px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .table-meta {
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        /* Custom Table */
+        .receipts-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .receipts-table th {
+            background: #f8fafc;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            color: #374151;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .receipts-table td {
+            padding: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14px;
+            color: #1e293b;
+        }
+        
+        .receipts-table tr:hover {
+            background: #f8fafc;
+        }
+        
+        .receipts-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* Status Badges */
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-badge.processed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-badge.failed {
+            background: #fecaca;
+            color: #991b1b;
+        }
+        
+        .status-badge.processing {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        /* Receipt Details */
+        .receipt-id {
+            font-weight: 600;
+            color: #3b82f6;
+        }
+        
+        .vehicle-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .vehicle-avatar {
+            width: 32px;
+            height: 32px;
+            background: #dbeafe;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+        }
+        
+        .vehicle-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .vehicle-plate {
+            font-weight: 600;
+            font-size: 13px;
+        }
+        
+        .vehicle-model {
+            font-size: 11px;
+            color: #64748b;
+        }
+        
+        .driver-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .driver-avatar {
+            width: 32px;
+            height: 32px;
+            background: #d1fae5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #065f46;
+            font-weight: 600;
+            font-size: 12px;
+        }
+        
+        .amount-cell {
+            font-weight: 600;
+            color: #059669;
+        }
+        
+        .date-cell {
+            color: #64748b;
+            font-size: 13px;
+        }
+        
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            padding: 60px 20px;
+            text-align: center;
+            color: #64748b;
+        }
+        
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            color: #cbd5e1;
+        }
+        
+        .empty-state h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        
+        .empty-state p {
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .modal-icon {
+            width: 40px;
+            height: 40px;
+            background: #fecaca;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #dc2626;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .modal-body {
+            color: #64748b;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 94px 16px 24px;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            
+            .filters-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filter-input, .filter-select {
+                min-width: auto;
+                width: 100%;
+            }
+            
+            .receipts-table {
+                font-size: 12px;
+            }
+            
+            .receipts-table th,
+            .receipts-table td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="/dashboard/" class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="#1C4E80"/>
+                    <text x="6" y="22" fill="white" font-family="Inter" font-weight="700" font-size="12">⛽</text>
+                </svg>
+                <span>Smart Fuel Management</span>
+            </a>
+        </div>
+        
+        <div class="navbar-right">
+            <a href="/dashboard/" class="nav-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                Dashboard
+            </a>
+            <a href="/mobile/upload/" class="nav-link primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17,8 12,3 7,8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                Upload Receipt
+            </a>
+            <a href="/admin/logout/" class="nav-link">Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-title">
+                <h1>Receipts Management</h1>
+                <p>View and manage all fuel receipts</p>
+            </div>
+            
+            <div class="page-actions">
+                <a href="/mobile/upload/" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17,8 12,3 7,8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    Upload New Receipt
+                </a>
+                <a href="/dashboard/analytics/" class="btn btn-outline">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"></polyline>
+                    </svg>
+                    Analytics
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value">{{ receipts.count }}</div>
+                <div class="stat-label">Total Receipts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ processed_count|default:0 }}</div>
+                <div class="stat-label">Processed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ pending_count|default:0 }}</div>
+                <div class="stat-label">Pending</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ currency_symbol }}{{ total_amount|default:0|floatformat:0 }}</div>
+                <div class="stat-label">Total Amount</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-section">
+            <form method="GET" id="filterForm">
+                <div class="filters-row">
+                    <div class="filter-group">
+                        <label class="filter-label">Search</label>
+                        <input type="text" name="search" class="filter-input" placeholder="Receipt ID, Vehicle, Driver..." value="{{ request.GET.search }}">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Status</label>
+                        <select name="status" class="filter-select">
+                            <option value="">All Status</option>
+                            <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
+                            <option value="processing" {% if request.GET.status == 'processing' %}selected{% endif %}>Processing</option>
+                            <option value="processed" {% if request.GET.status == 'processed' %}selected{% endif %}>Processed</option>
+                            <option value="failed" {% if request.GET.status == 'failed' %}selected{% endif %}>Failed</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Date Range</label>
+                        <select name="date_range" class="filter-select">
+                            <option value="">All Time</option>
+                            <option value="today" {% if request.GET.date_range == 'today' %}selected{% endif %}>Today</option>
+                            <option value="week" {% if request.GET.date_range == 'week' %}selected{% endif %}>This Week</option>
+                            <option value="month" {% if request.GET.date_range == 'month' %}selected{% endif %}>This Month</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Receipts Table -->
+        <div class="table-card">
+            <div class="table-header">
+                <div class="table-title">Fuel Receipts</div>
+                <div class="table-meta">{{ receipts.count }} receipt{{ receipts.count|pluralize }}</div>
+            </div>
+            
+            {% if receipts %}
+            <table class="receipts-table">
+                <thead>
+                    <tr>
+                        <th>Receipt</th>
+                        <th>Vehicle</th>
+                        <th>Driver</th>
+                        <th>Status</th>
+                        <th>Amount</th>
+                        <th>Fuel</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for receipt in receipts %}
+                    <tr>
+                        <td>
+                            <div class="receipt-id">#{{ receipt.id }}</div>
+                        </td>
+                        <td>
+                            <div class="vehicle-info">
+                                <div class="vehicle-avatar">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </div>
+                                <div class="vehicle-details">
+                                    <div class="vehicle-plate">{{ receipt.vehicle.license_plate|default:"N/A" }}</div>
+                                    <div class="vehicle-model">{{ receipt.vehicle.make }} {{ receipt.vehicle.model }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="driver-info">
+                                <div class="driver-avatar">
+                                    {{ receipt.driver.username|first|upper }}
+                                </div>
+                                <div>{{ receipt.driver.get_full_name|default:receipt.driver.username|default:"N/A" }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="status-badge {{ receipt.processing_status }}">
+                                {{ receipt.get_processing_status_display|default:receipt.processing_status }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="amount-cell">
+                                {% if receipt.total_amount %}
+                                    {{ currency_symbol }}{{ receipt.total_amount|floatformat:2 }}
+                                {% else %}
+                                    <span style="color: #9ca3af;">--</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            {% if receipt.gallons %}
+                                {{ receipt.gallons|floatformat:1 }} {{ fuel_unit }}
+                            {% else %}
+                                <span style="color: #9ca3af;">--</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="date-cell">{{ receipt.created_at|date:"M d, Y" }}<br><small>{{ receipt.created_at|date:"H:i" }}</small></div>
+                        </td>
+                        <td>
+                            <div class="actions-cell">
+                                {% if receipt.receipt_image %}
+                                <a href="{{ receipt.receipt_image.url }}" target="_blank" class="btn btn-outline btn-sm" title="View Receipt">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </a>
+                                {% endif %}
+                                <button onclick="confirmDelete({{ receipt.id }}, '{{ receipt.vehicle.license_plate }}')" class="btn btn-danger btn-sm" title="Delete Receipt">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <polyline points="3,6 5,6 21,6"></polyline>
+                                        <path d="M19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14,2 14,8 20,8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+                <h3>No receipts found</h3>
+                <p>Upload your first fuel receipt to get started with tracking your fleet's fuel consumption.</p>
+                <a href="/mobile/upload/" class="btn btn-primary">Upload Receipt</a>
+            </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="15" y1="9" x2="9" y2="15"></line>
+                        <line x1="9" y1="9" x2="15" y2="15"></line>
+                    </svg>
+                </div>
+                <div class="modal-title">Delete Receipt</div>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete receipt <strong id="deleteReceiptInfo"></strong>? This action cannot be undone.
+            </div>
+            <div class="modal-actions">
+                <button onclick="closeDeleteModal()" class="btn btn-outline">Cancel</button>
+                <button onclick="deleteReceipt()" class="btn btn-danger">Delete Receipt</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let receiptToDelete = null;
+
+        function confirmDelete(receiptId, vehiclePlate) {
+            receiptToDelete = receiptId;
+            document.getElementById('deleteReceiptInfo').textContent = `#${receiptId} (${vehiclePlate})`;
+            document.getElementById('deleteModal').classList.add('show');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('show');
+            receiptToDelete = null;
+        }
+
+        function deleteReceipt() {
+            if (!receiptToDelete) return;
+
+            // Create form and submit
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/dashboard/receipts/${receiptToDelete}/delete/`;
+            
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = 'csrfmiddlewaretoken';
+            csrfToken.value = '{{ csrf_token }}';
+            
+            form.appendChild(csrfToken);
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        // Auto-submit filter form on change
+        document.querySelectorAll('.filter-select').forEach(select => {
+            select.addEventListener('change', function() {
+                document.getElementById('filterForm').submit();
+            });
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDeleteModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeDeleteModal();
+            }
+        });
+    </script>
+</body>
+</html>

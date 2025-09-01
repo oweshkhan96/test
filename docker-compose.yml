@@ -1,0 +1,73 @@
+
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+      - ollama
+    environment:
+      - DEBUG=1
+      - DB_NAME=fuel_management
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - DB_HOST=db
+      - REDIS_URL=redis://redis:6379/0
+      - OLLAMA_HOST=http://ollama:11434
+
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=fuel_management
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  ollama:
+    image: ollama/ollama
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_MODELS=llama3.1
+    command: >
+      sh -c "ollama serve & 
+             sleep 10 && 
+             ollama pull llama3.1 && 
+             wait"
+
+  celery:
+    build: .
+    command: celery -A fuel_management worker -l info
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+      - redis
+      - ollama
+    environment:
+      - DEBUG=1
+      - DB_NAME=fuel_management
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - DB_HOST=db
+      - REDIS_URL=redis://redis:6379/0
+      - OLLAMA_HOST=http://ollama:11434
+
+volumes:
+  postgres_data:
+  ollama_data:

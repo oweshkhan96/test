@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📱 Mobile Receipt Upload - Smart Fuel Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+        
+        /* Navigation - Same as Dashboard */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 20px;
+            color: #1c4e80;
+            text-decoration: none;
+        }
+        
+        .navbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: #f1f5f9;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 94px 24px 24px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .content-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        
+        .page-title h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+        
+        .page-title p {
+            color: #64748b;
+            font-size: 16px;
+        }
+        
+        /* Cards - Same styling as Dashboard */
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 24px 24px 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .card-header h5 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+        }
+        
+        .card-body {
+            padding: 24px;
+        }
+        
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            transition: all 0.2s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-text {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        
+        /* Upload Area */
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 16px;
+            padding: 32px 20px;
+            text-align: center;
+            background-color: #f8fafc;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            background-color: #f0f9ff;
+            border-color: #3b82f6;
+        }
+        
+        .upload-area svg {
+            width: 48px;
+            height: 48px;
+            color: #3b82f6;
+            margin-bottom: 16px;
+        }
+        
+        .upload-area p {
+            font-size: 16px;
+            font-weight: 500;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+        
+        .upload-area small {
+            color: #64748b;
+            font-size: 14px;
+        }
+        
+        /* Buttons - Same as Dashboard */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
+        .btn-outline-primary {
+            background: white;
+            color: #3b82f6;
+            border: 1px solid #3b82f6;
+        }
+        
+        .btn-outline-primary:hover {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .w-100 {
+            width: 100%;
+        }
+        
+        /* Vehicle Cards */
+        .vehicle-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid #10b981;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+        }
+        
+        .vehicle-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Status Badges */
+        .badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .bg-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .bg-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .bg-danger {
+            background: #fecaca;
+            color: #991b1b;
+        }
+        
+        .bg-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .bg-secondary {
+            background: #f1f5f9;
+            color: #475569;
+        }
+        
+        /* Messages */
+        .alert {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+        
+        .alert-danger {
+            background: #fecaca;
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+        
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: inherit;
+            opacity: 0.7;
+            margin-left: auto;
+        }
+        
+        .btn-close:hover {
+            opacity: 1;
+        }
+        
+        /* Empty States */
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: #64748b;
+        }
+        
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        .empty-state h5 {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        
+        /* Quick Actions Grid */
+        .quick-actions {
+            display: grid;
+            gap: 12px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 94px 16px 24px;
+            }
+            
+            .card-body {
+                padding: 20px;
+            }
+            
+            .upload-area {
+                padding: 24px 16px;
+            }
+        }
+        
+        /* Loading States */
+        .file-preview {
+            background: #f0f9ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+            text-align: center;
+        }
+        
+        .file-preview svg {
+            width: 32px;
+            height: 32px;
+            color: #10b981;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navbar - Same as Dashboard -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="/dashboard/" class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="#1C4E80"/>
+                    <text x="6" y="22" fill="white" font-family="Inter" font-weight="700" font-size="12">⛽</text>
+                </svg>
+                <span>Smart Fuel Management</span>
+            </a>
+        </div>
+        
+        <div class="navbar-right">
+            <div class="user-menu">
+                <div class="user-name">👋 {{ user.get_full_name|default:user.username }}</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-header">
+            <div class="page-title">
+                <h1>📷 Upload Fuel Receipt</h1>
+                <p>Capture or select your receipt for automatic processing</p>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                    <button type="button" class="btn-close" onclick="this.parentElement.remove()">×</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Upload Form Card -->
+        <div class="card">
+            <div class="card-header">
+                <h5>📷 Upload Fuel Receipt</h5>
+            </div>
+            <div class="card-body">
+                {% if vehicles %}
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Vehicle Selection -->
+                        <div class="form-group">
+                            <label for="vehicle" class="form-label">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="vertical-align: middle; margin-right: 8px;">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                Select Vehicle *
+                            </label>
+                            <select name="vehicle" id="vehicle" class="form-control" required>
+                                <option value="">Choose vehicle...</option>
+                                {% for vehicle in vehicles %}
+                                    <option value="{{ vehicle.id }}">
+                                        {{ vehicle.license_plate }} - {{ vehicle.make }} {{ vehicle.model }}
+                                        {% if vehicle.fuel_type %} ({{ vehicle.get_fuel_type_display }}){% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text">
+                                {{ vehicle_count }} vehicle{{ vehicle_count|pluralize }} available
+                            </small>
+                        </div>
+
+                        <!-- File Upload -->
+                        <div class="form-group">
+                            <label for="receipt_image" class="form-label">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="vertical-align: middle; margin-right: 8px;">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17,8 12,3 7,8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                                Receipt Photo *
+                            </label>
+                            <div class="upload-area" onclick="document.getElementById('receipt_image').click()">
+                                <input type="file" name="receipt_image" id="receipt_image" 
+                                       class="form-control" accept="image/*" capture="environment" required 
+                                       style="position: absolute; opacity: 0; pointer-events: none;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17,8 12,3 7,8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                                <p>Tap to take photo or select from gallery</p>
+                                <small>Supports: JPG, PNG, HEIC formats</small>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-success w-100">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17,8 12,3 7,8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            Upload Receipt
+                        </button>
+                    </form>
+                {% else %}
+                    <!-- No Vehicles Available -->
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <h5>No Vehicles Available</h5>
+                        <p>
+                            {% if user.role == 'driver' %}
+                                No vehicles have been assigned to you yet. Contact your fleet manager.
+                            {% else %}
+                                No vehicles found in your company. <a href="/dashboard/vehicles/create/">Add vehicles</a>.
+                            {% endif %}
+                        </p>
+                        <a href="/dashboard/" class="btn btn-primary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                            Go to Dashboard
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Available Vehicles -->
+        {% if vehicles %}
+        <div class="card">
+            <div class="card-header">
+                <h5>🚗 Your Available Vehicles ({{ vehicle_count }})</h5>
+            </div>
+            <div class="card-body">
+                {% for vehicle in vehicles %}
+                    <div class="vehicle-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ vehicle.license_plate }}</strong>
+                                <br>
+                                <small class="text-muted">
+                                    {{ vehicle.make }} {{ vehicle.model }} ({{ vehicle.year }})
+                                </small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-info">{{ vehicle.get_fuel_type_display }}</span>
+                                {% if vehicle.assigned_driver %}
+                                    <br><small class="text-muted">{{ vehicle.assigned_driver.get_full_name|default:vehicle.assigned_driver.username }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Recent Receipts -->
+        {% if recent_receipts %}
+        <div class="card">
+            <div class="card-header">
+                <h5>📄 Recent Receipts</h5>
+            </div>
+            <div class="card-body">
+                {% for receipt in recent_receipts %}
+                    <div class="d-flex justify-content-between align-items-center border-bottom py-3">
+                        <div>
+                            <strong>Receipt #{{ receipt.id }}</strong>
+                            <br>
+                            <small class="text-muted">
+                                {{ receipt.vehicle.license_plate }} • {{ receipt.created_at|timesince }} ago
+                            </small>
+                        </div>
+                        <div class="text-end">
+                            {% if receipt.processing_status == 'processed' %}
+                                <span class="badge bg-success">✅ Processed</span>
+                            {% elif receipt.processing_status == 'pending' %}
+                                <span class="badge bg-warning">⏳ Processing</span>
+                            {% elif receipt.processing_status == 'failed' %}
+                                <span class="badge bg-danger">❌ Failed</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ receipt.processing_status }}</span>
+                            {% endif %}
+                            {% if receipt.total_amount %}
+                                <br><small class="text-success">₹{{ receipt.total_amount }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h5>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="quick-actions">
+                    <a href="/dashboard/" class="btn btn-outline-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        Dashboard
+                    </a>
+                    {% if user.role in 'admin,manager' %}
+                        <a href="/dashboard/vehicles/" class="btn btn-outline-primary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            Manage Vehicles
+                        </a>
+                    {% endif %}
+                    
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('receipt_image').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Remove existing preview
+                const existingPreview = document.querySelector('.file-preview');
+                if (existingPreview) {
+                    existingPreview.remove();
+                }
+                
+                // Add new preview
+                const preview = document.createElement('div');
+                preview.className = 'file-preview';
+                preview.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <polyline points="20,6 9,17 4,12"></polyline>
+                    </svg>
+                    <p><strong>Ready to upload:</strong> ${file.name}</p>
+                    <small>File size: ${(file.size / 1024 / 1024).toFixed(2)} MB</small>
+                `;
+                
+                // Insert after upload area
+                document.querySelector('.upload-area').parentNode.appendChild(preview);
+            }
+        });
+
+        // Auto-refresh receipt status every 30 seconds
+        setInterval(function() {
+            // Only reload if on the same page
+            if (window.location.pathname === '/mobile/upload/') {
+                location.reload();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

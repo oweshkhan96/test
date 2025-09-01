@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Receipt</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .camera-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        #preview {
+            width: 100%;
+            border-radius: 8px;
+        }
+        .capture-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Upload Fuel Receipt</h2>
+        
+        <!-- Vehicle Selection -->
+        <div class="mb-3">
+            <label for="vehicleSelect" class="form-label">Select Vehicle</label>
+            <select class="form-select" id="vehicleSelect" required>
+                <option value="">Choose vehicle...</option>
+            </select>
+        </div>
+        
+        <!-- Camera Preview -->
+        <div class="camera-container mb-3">
+            <video id="preview" autoplay playsinline></video>
+            <button class="capture-btn" id="captureBtn" type="button">📷</button>
+        </div>
+        
+        <!-- Hidden canvas for image capture -->
+        <canvas id="canvas" style="display: none;"></canvas>
+        
+        <!-- File input fallback -->
+        <div class="mb-3">
+            <label for="fileInput" class="form-label">Or select image file</label>
+            <input type="file" class="form-control" id="fileInput" accept="image/*" capture="environment">
+        </div>
+        
+        <!-- Captured image preview -->
+        <div id="imagePreview" style="display: none;">
+            <h5>Captured Image:</h5>
+            <img id="capturedImage" class="img-fluid mb-3" style="max-width: 300px;">
+            <div class="d-flex gap-2">
+                <button class="btn btn-success" id="uploadBtn">Upload Receipt</button>
+                <button class="btn btn-secondary" id="retakeBtn">Retake</button>
+            </div>
+        </div>
+        
+        <!-- Processing status -->
+        <div id="processingStatus" style="display: none;">
+            <div class="alert alert-info">
+                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                Processing receipt... This may take a moment.
+            </div>
+        </div>
+        
+        <!-- Success/Error messages -->
+        <div id="messageArea"></div>
+    </div>
+
+    <script>
+        let currentStream = null;
+        let capturedImageBlob = null;
+        
+        // Initialize camera and load vehicles
+        document.addEventListener('DOMContentLoaded', function() {
+            loadVehicles();
+            initCamera();
+        });
+        
+        async function loadVehicles() {
+            try {
+                const response = await fetch('/api/mobile/vehicles/');
+                const data = await response.json();
+                
+                const select = document.getElementById('vehicleSelect');
+                data.vehicles.forEach(vehicle => {
+                    const option = document.createElement('option');
+                    option.value = vehicle.id;
+                    option.textContent = `${vehicle.license_plate} - ${vehicle.make} ${vehicle.model}`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                showMessage('Failed to load vehicles', 'danger');
+            }
+        }
+        
+        async function initCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { 
+                        facingMode: 'environment', // Use back camera
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                });
+                
+                currentStream = stream;
+                document.getElementById('preview').srcObject = stream;
+            } catch (error) {
+                console.error('Camera access failed:', error);
+                showMessage('Camera access failed. Please use file input instead.', 'warning');
+                document.querySelector('.camera-container').style.display = 'none';
+            }
+        }
+        
+        document.getElementById('captureBtn').addEventListener('click', function() {
+            const video = document.getElementById('preview');
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size to match video
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            // Draw video frame to canvas
+            ctx.drawImage(video, 0, 0);
+            
+            // Convert to blob
+            canvas.toBlob(function(blob) {
+                capturedImageBlob = blob;
+                
+                // Show preview
+                const img = document.getElementById('capturedImage');
+                img.src = URL.createObjectURL(blob);
+                document.getElementById('imagePreview').style.display = 'block';
+                document.querySelector('.camera-container').style.display = 'none';
+                
+                // Stop camera
+                if (currentStream) {
+                    currentStream.getTracks().forEach(track => track.stop());
+                }
+            }, 'image/jpeg', 0.8);
+        });
+        
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                capturedImageBlob = file;
+                const img = document.getElementById('capturedImage');
+                img.src = URL.createObjectURL(file);
+                document.getElementById('imagePreview').style.display = 'block';
+                document.querySelector('.camera-container').style.display = 'none';
+            }
+        });
+        
+        document.getElementById('retakeBtn').addEventListener('click', function() {
+            document.getElementById('imagePreview').style.display = 'none';
+            document.querySelector('.camera-container').style.display = 'block';
+            initCamera();
+        });
+        
+        document.getElementById('uploadBtn').addEventListener('click', async function() {
+            const vehicleId = document.getElementById('vehicleSelect').value;
+            
+            if (!vehicleId) {
+                showMessage('Please select a vehicle', 'danger');
+                return;
+            }
+            
+            if (!capturedImageBlob) {
+                showMessage('Please capture or select an image', 'danger');
+                return;
+            }
+            
+            // Show processing status
+            document.getElementById('processingStatus').style.display = 'block';
+            
+            // Create form data
+            const formData = new FormData();
+            formData.append('receipt_image', capturedImageBlob, 'receipt.jpg');
+            formData.append('vehicle_id', vehicleId);
+            
+            try {
+                const response = await fetch('/api/mobile/receipts/upload/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showMessage('Receipt uploaded successfully! Processing...', 'success');
+                    // Poll for processing status
+                    pollProcessingStatus(data.receipt_id);
+                } else {
+                    showMessage(data.error || 'Upload failed', 'danger');
+                }
+            } catch (error) {
+                showMessage('Upload failed. Please try again.', 'danger');
+            } finally {
+                document.getElementById('processingStatus').style.display = 'none';
+            }
+        });
+        
+        async function pollProcessingStatus(receiptId) {
+            let attempts = 0;
+            const maxAttempts = 30; // 30 seconds max
+            
+            const poll = async () => {
+                try {
+                    const response = await fetch(`/api/mobile/receipts/${receiptId}/status/`);
+                    const data = await response.json();
+                    
+                    if (data.status === 'processed') {
+                        showMessage(`Receipt processed successfully! Extracted: $${data.extracted_data.total_amount}, ${data.extracted_data.gallons} gallons`, 'success');
+                        // Reset form
+                        setTimeout(() => {
+                            location.reload();
+                        }, 3000);
+                    } else if (data.status === 'failed') {
+                        showMessage('Receipt processing failed. Please try again or enter data manually.', 'danger');
+                    } else if (data.status === 'manual_review') {
+                        showMessage('Receipt processed but needs manual review. Check the dashboard for details.', 'warning');
+                    } else if (attempts < maxAttempts) {
+                        // Still processing, try again in 2 seconds
+                        setTimeout(poll, 2000);
+                        attempts++;
+                    } else {
+                        showMessage('Processing is taking longer than expected. Check dashboard for status.', 'info');
+                    }
+                } catch (error) {
+                    showMessage('Failed to check processing status', 'warning');
+                }
+            };
+            
+            setTimeout(poll, 2000); // Start polling after 2 seconds
+        }
+        
+        function showMessage(message, type) {
+            const messageArea = document.getElementById('messageArea');
+            messageArea.innerHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+        }
+        
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
