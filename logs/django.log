@@ -1733,3 +1733,14 @@ LINE 1: ...ser"."company_id", "accounts_customuser"."phone", "accounts_...
 D:\Dev\fuelmng\accounts\models.py changed, reloading.
 Watching for file changes with StatReloader
 Not Found: /dashboard/analytics-data/
+Watching for file changes with StatReloader
+D:\Dev\fuelmng\drivers\views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Not Found: /dashboard/analytics-data/
+Processing receipt #18 with Gemini API...
+Sending request to Gemini API for receipt #18...
+Receipt #18 processed successfully: total=20000.0 gallons=218.364 station=IndianOil
+Not Found: /dashboard/analytics-data/

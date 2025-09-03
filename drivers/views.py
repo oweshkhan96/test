@@ -60,6 +60,12 @@ def create_driver(request):
     if request.method == 'POST':
         form = DriverCreationForm(request.POST)
         
+        # Add debugging
+        print(f"Form is valid: {form.is_valid()}")
+        print(f"Form errors: {form.errors}")
+        print(f"Form data: {form.cleaned_data if form.is_valid() else 'Invalid'}")
+        print(f"User company: {request.user.company}")
+        
         if form.is_valid():
             try:
                 driver = form.save(company=request.user.company)
@@ -71,6 +77,7 @@ def create_driver(request):
                 return redirect('driver_list')
                 
             except Exception as e:
+                print(f"Save exception: {str(e)}")  # Add this line
                 messages.error(request, f'Error creating driver: {str(e)}')
                 
         else:
