@@ -12,7 +12,7 @@ urlpatterns = [
     path('api/search-places/', views.api_search_places, name='api_search_places'),
     path('api/calculate-route/', views.api_calculate_route, name='api_calculate_route'),
     path('api/find-fuel-stations/', views.api_find_fuel_stations, name='api_find_fuel_stations'),
-    path('api/ai-optimize/', views.api_ai_optimize_route, name='api_ai_optimize_route'),
+    path('api/gemini-optimize/', views.api_gemini_optimize_route, name='api_gemini_optimize_route'),  # Updated
     
     # Route management
     path('routes/<int:route_id>/save-optimization/', views.save_route_optimization, name='save_route_optimization'),

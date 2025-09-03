@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Route Optimizer - Smart Fuel Management</title>
+    <title>🤖 Gemini AI Route Optimizer - Smart Fuel Management</title>
     
     <!-- External CSS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -176,16 +176,37 @@
             background: #2f855a;
         }
         
-        .btn-ai {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+        .btn-gemini {
+            background: linear-gradient(135deg, #4285f4, #34a853);
             color: white;
-            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+            box-shadow: 0 4px 15px rgba(66, 133, 244, 0.4);
+            border: none;
+            position: relative;
+            overflow: hidden;
         }
         
-        .btn-ai:hover {
-            background: linear-gradient(135deg, #ee5a24, #ff6b6b);
+        .btn-gemini:hover {
+            background: linear-gradient(135deg, #3367d6, #2e8b4f);
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+            box-shadow: 0 6px 20px rgba(66, 133, 244, 0.6);
+        }
+        
+        .btn-gemini::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #4285f4, #34a853, #fbbc05, #ea4335);
+            border-radius: inherit;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .btn-gemini:hover::before {
+            opacity: 0.7;
         }
         
         .btn-secondary {
@@ -223,10 +244,10 @@
         }
         
         .loading-spinner {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             border: 4px solid #333;
-            border-top: 4px solid #fff;
+            border-top: 4px solid #4285f4;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-bottom: 20px;
@@ -312,21 +333,25 @@
             opacity: 0.9;
         }
         
-        /* AI suggestions */
-        .ai-suggestion {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+        /* Gemini AI suggestions */
+        .gemini-suggestion {
+            background: linear-gradient(135deg, #4285f4, #34a853);
             color: white;
             border-radius: 8px;
             padding: 15px;
             margin-bottom: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
         
-        .ai-suggestion h4 {
+        .gemini-suggestion h4 {
             margin-bottom: 10px;
             font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
-        .ai-suggestion p {
+        .gemini-suggestion p {
             font-size: 13px;
             line-height: 1.4;
             opacity: 0.9;
@@ -380,12 +405,21 @@
                 height: 60vh;
             }
         }
+        
+        .gemini-badge {
+            background: linear-gradient(45deg, #4285f4, #34a853);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 5px;
+        }
     </style>
 </head>
 <body>
     <!-- Header -->
     <div class="header">
-        <h1><i class="fas fa-robot"></i> AI-Powered Fleet Route Optimizer</h1>
+        <h1>🤖 Gemini AI-Powered Fleet Route Optimizer</h1>
         <div class="stats">
             <div><i class="fas fa-gas-pump"></i> <span id="total-fuel-cost">$0</span></div>
             <div><i class="fas fa-road"></i> <span id="total-distance">0 km</span></div>
@@ -409,8 +443,8 @@
                     <button id="enable-manual-pin" class="btn btn-secondary btn-sm">
                         <i class="fas fa-map-pin"></i> Click to Pin
                     </button>
-                    <button id="ai-optimize-route" class="btn btn-ai btn-sm">
-                        <i class="fas fa-brain"></i> AI Optimize
+                    <button id="gemini-optimize-route" class="btn btn-gemini btn-sm">
+                        <i class="fab fa-google"></i> Gemini AI Optimize
                     </button>
                     <button id="optimize-route" class="btn btn-success btn-sm">
                         <i class="fas fa-magic"></i> Standard Optimize
@@ -425,11 +459,15 @@
                 </div>
             </div>
 
-            <!-- AI Suggestions Section -->
-            <div class="sidebar-section" id="ai-suggestions-section" style="display:none;">
-                <div id="ai-suggestions" class="ai-suggestion">
-                    <h4><i class="fas fa-lightbulb"></i> AI Route Insights</h4>
-                    <p id="ai-suggestion-text">AI analysis will appear here...</p>
+            <!-- Gemini AI Suggestions Section -->
+            <div class="sidebar-section" id="gemini-suggestions-section" style="display:none;">
+                <div id="gemini-suggestions" class="gemini-suggestion">
+                    <h4>
+                        <i class="fab fa-google"></i> 
+                        Gemini AI Route Insights
+                        <span class="gemini-badge">POWERED BY GEMINI</span>
+                    </h4>
+                    <p id="gemini-suggestion-text">Gemini AI analysis will appear here...</p>
                 </div>
             </div>
 
@@ -491,15 +529,15 @@
     <!-- JavaScript -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Configuration
+        // Configuration - Updated to use Gemini
         const GEOAPIFY_API_KEY = '{{ geoapify_api_key }}';
-        const OPENROUTER_API_KEY = '{{ openrouter_api_key }}';
+        const GEMINI_API_KEY = '{{ gemini_api_key }}';
         
         // Smart Fleet Mapper Class
         class SmartFleetMapper {
             constructor() {
                 this.GEOAPIFY_API_KEY = GEOAPIFY_API_KEY;
-                this.OPENROUTER_API_KEY = OPENROUTER_API_KEY;
+                this.GEMINI_API_KEY = GEMINI_API_KEY;
                 this.map = null;
                 this.markerGroup = null;
                 this.routeLine = null;
@@ -570,9 +608,9 @@
                     }
                 });
                 
-                // Button events
+                // Button events - Updated for Gemini
                 document.getElementById('enable-manual-pin').addEventListener('click', () => this.toggleManualPinMode());
-                document.getElementById('ai-optimize-route').addEventListener('click', () => this.aiOptimizeRoute());
+                document.getElementById('gemini-optimize-route').addEventListener('click', () => this.geminiOptimizeRoute());
                 document.getElementById('optimize-route').addEventListener('click', () => this.optimizeRoute());
                 document.getElementById('clear-all').addEventListener('click', () => this.clearAllStops());
             }
@@ -587,7 +625,7 @@
                 overlay.innerHTML = `
                     <div class="loading-spinner"></div>
                     <div style="margin-bottom: 10px; font-weight: 600;">${message}</div>
-                    <div style="font-size: 14px; opacity: 0.8;">Please wait while we process your request...</div>
+                    <div style="font-size: 14px; opacity: 0.8;">Powered by Google Gemini AI</div>
                 `;
                 
                 document.body.appendChild(overlay);
@@ -708,7 +746,7 @@
                 this.updateStats();
                 
                 document.getElementById('route-info').style.display = 'none';
-                document.getElementById('ai-suggestions-section').style.display = 'none';
+                document.getElementById('gemini-suggestions-section').style.display = 'none';
                 document.getElementById('fuel-stations').innerHTML = '<p style="color: #718096; text-align: center;">Plan a route to see fuel pumps along the way</p>';
             }
             
@@ -771,19 +809,19 @@
                 }
             }
             
-            async aiOptimizeRoute() {
+            async geminiOptimizeRoute() {
                 if (this.stops.length < 3) {
-                    this.showAlert('Need at least 3 stops for AI optimization', 'warning');
+                    this.showAlert('Need at least 3 stops for Gemini AI optimization', 'warning');
                     return;
                 }
                 
                 // Show loading overlay
-                this.showLoadingOverlay('AI Route Optimization in Progress');
+                this.showLoadingOverlay('🤖 Gemini AI Route Optimization in Progress');
                 
                 try {
                     const originalDistance = this.currentRoute ? this.currentRoute.distance.toFixed(2) : '0';
                     
-                    const response = await fetch('/route-optimizer/api/ai-optimize/', {
+                    const response = await fetch('/route-optimizer/api/gemini-optimize/', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -795,25 +833,28 @@
                     const data = await response.json();
                     
                     if (data.success && Array.isArray(data.optimal_order)) {
-                        await this.applyAIOptimization(data.optimal_order, originalDistance, data.ai_response);
+                        await this.applyGeminiOptimization(data.optimal_order, originalDistance, data.gemini_response);
+                        
+                        // Show Gemini-specific success message
+                        this.showAlert('🤖 Route optimized successfully using Google Gemini AI!', 'success');
                     } else {
-                        throw new Error('AI returned invalid optimization order');
+                        throw new Error(data.error || 'Gemini AI returned invalid optimization order');
                     }
                 } catch (error) {
-                    console.error('AI optimization error:', error);
-                    this.showAlert(`AI optimization failed: ${error.message}`, 'error');
+                    console.error('Gemini AI optimization error:', error);
+                    this.showAlert(`🤖 Gemini AI optimization failed: ${error.message}`, 'error');
                 } finally {
                     // Hide loading overlay
                     this.hideLoadingOverlay();
                 }
             }
             
-            async applyAIOptimization(optimizedOrder, originalDistance, aiResponse = '') {
+            async applyGeminiOptimization(optimizedOrder, originalDistance, geminiResponse = '') {
                 if (!Array.isArray(optimizedOrder) || optimizedOrder.length !== this.stops.length) {
                     throw new Error(`Invalid order length: expected ${this.stops.length}, got ${optimizedOrder.length}`);
                 }
                 
-                // Reorder stops based on AI optimization
+                // Reorder stops based on Gemini AI optimization
                 const reorderedStops = optimizedOrder.map(id => this.stops[id - 1]);
                 this.stops = reorderedStops;
                 
@@ -824,7 +865,7 @@
                 const newDistance = this.currentRoute ? this.currentRoute.distance.toFixed(2) : '0';
                 const distanceSaved = originalDistance ? (parseFloat(originalDistance) - parseFloat(newDistance)).toFixed(2) : '0';
                 
-                let suggestionHtml = '<strong>Route Optimized by AI!</strong><br><br>';
+                let suggestionHtml = '<strong>🤖 Route Optimized by Google Gemini AI!</strong><br><br>';
                 suggestionHtml += `<strong>Original:</strong> ${originalDistance} km<br>`;
                 suggestionHtml += `<strong>Optimized:</strong> ${newDistance} km<br>`;
                 
@@ -832,36 +873,48 @@
                     suggestionHtml += `<strong>Distance Saved:</strong> ${distanceSaved} km<br>`;
                     
                     const fuelSavings = (distanceSaved * 0.621371 / this.vehicleConfig.avgMPG * this.vehicleConfig.fuelPrice);
-                    suggestionHtml += `<strong>Fuel Savings:</strong> $${fuelSavings.toFixed(2)}`;
+                    suggestionHtml += `<strong>Fuel Savings:</strong> $${fuelSavings.toFixed(2)}<br>`;
+                    suggestionHtml += `<strong>AI Engine:</strong> Google Gemini 2.0 Flash`;
                 } else if (distanceSaved < 0) {
                     suggestionHtml += `<strong>Distance Change:</strong> +${Math.abs(distanceSaved)} km<br>`;
-                    suggestionHtml += `<strong>Note:</strong> Original route was already well optimized`;
+                    suggestionHtml += `<strong>Note:</strong> Original route was already well optimized<br>`;
+                    suggestionHtml += `<strong>AI Engine:</strong> Google Gemini 2.0 Flash`;
                 } else {
-                    suggestionHtml += `<strong>Route confirmed optimal!</strong>`;
+                    suggestionHtml += `<strong>Route confirmed optimal by Gemini AI!</strong>`;
                 }
                 
-                this.displayAISuggestions({ customMessage: suggestionHtml });
-                this.showAlert('Route successfully optimized by AI!', 'success');
+                this.displayGeminiSuggestions({ customMessage: suggestionHtml });
             }
             
-            displayAISuggestions(aiSuggestion) {
-                const suggestionsSection = document.getElementById('ai-suggestions-section');
-                const suggestionsText = document.getElementById('ai-suggestion-text');
+            displayGeminiSuggestions(geminiSuggestion) {
+                const suggestionsSection = document.getElementById('gemini-suggestions-section');
+                const suggestionsText = document.getElementById('gemini-suggestion-text');
                 
-                suggestionsText.innerHTML = aiSuggestion.customMessage || 'AI optimization completed!';
+                suggestionsText.innerHTML = geminiSuggestion.customMessage || 'Gemini AI optimization completed!';
                 suggestionsSection.style.display = 'block';
             }
             
             showAlert(message, type = 'info') {
                 const alertDiv = document.createElement('div');
                 alertDiv.className = `alert alert-${type}`;
+                alertDiv.style.cssText = `
+                    padding: 12px 16px;
+                    margin: 10px 20px;
+                    border-radius: 6px;
+                    font-size: 14px;
+                    background: ${type === 'success' ? '#d1fae5' : type === 'error' ? '#fee2e2' : '#dbeafe'};
+                    color: ${type === 'success' ? '#065f46' : type === 'error' ? '#991b1b' : '#1e40af'};
+                    border: 1px solid ${type === 'success' ? '#a7f3d0' : type === 'error' ? '#fecaca' : '#93c5fd'};
+                `;
                 alertDiv.innerHTML = `<i class="fas fa-info-circle"></i> ${message}`;
                 
                 const sidebar = document.getElementById('sidebar');
                 sidebar.insertBefore(alertDiv, sidebar.firstChild);
                 
                 setTimeout(() => {
-                    alertDiv.remove();
+                    if (alertDiv.parentNode) {
+                        alertDiv.remove();
+                    }
                 }, 5000);
             }
             
@@ -876,7 +929,7 @@
                     const li = document.createElement('li');
                     li.className = 'stop-item';
                     
-                    const stopIcon = stop.properties.manual ? '📍' : (stop.properties.fuelStation ? '⛽' : '📍');
+                    const stopIcon = stop.properties.manual ? '📍' : (stop.properties.fuelStation ? '⛽' : '🎯');
                     
                     li.innerHTML = `
                         <div class="stop-info">
@@ -1021,7 +1074,7 @@
                 }
                 
                 this.routeLine = L.polyline(coordinates, {
-                    color: '#667eea',
+                    color: '#4285f4',
                     weight: 5,
                     opacity: 0.8,
                     dashArray: '10,5'
@@ -1062,9 +1115,9 @@
                 let instructionsHtml = '';
                 instructions.forEach((instruction, index) => {
                     instructionsHtml += `
-                        <div class="instruction-step">
-                            <div>${instruction.text}</div>
-                            <div class="step-distance">${instruction.distance.toFixed(1)} km</div>
+                        <div class="instruction-step" style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                            <div style="font-weight: 500;">${instruction.text}</div>
+                            <div class="step-distance" style="font-size: 12px; color: #666;">${instruction.distance.toFixed(1)} km</div>
                         </div>
                     `;
                 });
@@ -1101,7 +1154,7 @@
                                 <div style="font-weight: 500; display: flex; align-items: center; gap: 5px;">
                                     <i class="fas fa-gas-pump" style="color: #e74c3c; font-size: 12px;"></i>
                                     ${displayName}
-                                    <span class="route-fuel-tag">ROADSIDE</span>
+                                    <span style="background: #4285f4; color: white; font-size: 9px; padding: 2px 4px; border-radius: 8px;">ROADSIDE</span>
                                 </div>
                                 <div style="font-size: 11px; color: #666; margin-top: 2px;">
                                     ${station.distance_from_route.toFixed(1)} km from route
@@ -1131,7 +1184,7 @@
                 if (this.routeFuelStations.length > 12) {
                     const showMoreDiv = document.createElement('div');
                     showMoreDiv.innerHTML = `
-                        <p style="text-align: center; color: #667eea; cursor: pointer; padding: 10px; font-size: 12px;">
+                        <p style="text-align: center; color: #4285f4; cursor: pointer; padding: 10px; font-size: 12px;">
                             <i class="fas fa-chevron-down"></i> Show ${this.routeFuelStations.length - 12} more fuel pumps
                         </p>
                     `;
@@ -1141,6 +1194,7 @@
             }
             
             displayAllRouteFuelStations() {
+                // Similar implementation as displayRouteFuelStations but for all stations
                 const fuelStationsDiv = document.getElementById('fuel-stations');
                 fuelStationsDiv.innerHTML = '';
                 
@@ -1163,7 +1217,6 @@
                                 <div style="font-weight: 500; display: flex; align-items: center; gap: 5px;">
                                     <i class="fas fa-gas-pump" style="color: #e74c3c; font-size: 12px;"></i>
                                     ${displayName}
-                                    <span class="route-fuel-tag">ROADSIDE</span>
                                 </div>
                                 <div style="font-size: 11px; color: #666; margin-top: 2px;">
                                     ${station.distance_from_route.toFixed(1)} km from route

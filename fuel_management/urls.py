@@ -9,8 +9,8 @@ urlpatterns = [
     path('dashboard/', include('dashboard.urls')),
     path('drivers/', include('drivers.urls')),
     path('drivers/', include('drivers.urls')),
-    path('mobile/', include('mobile_api.urls')),  # Keep only ONE of these
-    # Remove: path('api/', include('mobile_api.urls')),  # DELETE this line
+    path('mobile/', include('mobile_api.urls')),
+    path('route-optimizer/', include('route_optimizer.urls')), 
 ]
 
 if settings.DEBUG:

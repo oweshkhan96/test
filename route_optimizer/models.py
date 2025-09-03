@@ -86,7 +86,7 @@ class RouteOptimization(models.Model):
     route = models.ForeignKey(Route, on_delete=models.CASCADE, related_name='optimizations')
     optimization_type = models.CharField(max_length=20, choices=[
         ('standard', 'Standard'),
-        ('ai', 'AI Powered'),
+        ('gemini_ai', 'Gemini AI'),  # Updated from 'ai' to 'gemini_ai'
     ])
     
     original_order = models.JSONField()  # Array of stop IDs
@@ -97,7 +97,7 @@ class RouteOptimization(models.Model):
     distance_saved = models.FloatField()
     fuel_savings = models.DecimalField(max_digits=8, decimal_places=2)
     
-    ai_response = models.TextField(blank=True)  # Store AI response for debugging
+    gemini_response = models.TextField(blank=True)  # Updated from ai_response
     processing_time = models.FloatField(null=True)  # in seconds
     
     created_at = models.DateTimeField(auto_now_add=True)

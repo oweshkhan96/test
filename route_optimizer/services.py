@@ -5,16 +5,16 @@ import aiohttp
 from django.conf import settings
 from typing import List, Dict, Tuple
 import math
-import base64
-import os
+import re
 from decimal import Decimal
+import os
 
 class RouteOptimizationService:
     """Service for route optimization and mapping operations using Google Gemini for AI"""
     
     def __init__(self):
         self.geoapify_key = settings.GEOAPIFY_API_KEY
-        self.gemini_key = settings.GEMINI_API_KEY  # Updated to use Gemini
+        self.gemini_key = settings.GEMINI_API_KEY
         self.gemini_url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
     
     def calculate_distance(self, lat1: float, lon1: float, lat2: float, lon2: float) -> float:
@@ -247,17 +247,13 @@ class RouteOptimizationService:
         return min_distance
     
     def _extract_json_from_text(self, text: str) -> List[int]:
-        """
-        Extract optimal order from Gemini response
-        Similar to your OCR JSON extraction but for route optimization
-        """
+        """Extract optimal order from Gemini response (similar to your OCR system)"""
         if not text:
             return []
         
         text = text.strip()
         
         # First, try to find JSON array in response
-        import re
         array_match = re.search(r'\[[\d,\s]+\]', text)
         if array_match:
             try:
@@ -275,7 +271,7 @@ class RouteOptimizationService:
         
         return []
     
-    async def ai_optimize_route(self, stops: List[Dict]) -> Dict:
+    async def gemini_optimize_route(self, stops: List[Dict]) -> Dict:
         """Use Google Gemini to optimize route order"""
         if len(stops) < 3:
             return {'success': False, 'error': 'Need at least 3 stops for AI optimization'}
@@ -364,15 +360,15 @@ Do not include any explanation or additional text, just the JSON array.
                                 return {
                                     'success': True,
                                     'optimal_order': optimal_order,
-                                    'ai_response': content_text
+                                    'gemini_response': content_text
                                 }
                             else:
                                 print(f"Invalid order from Gemini: {optimal_order}")
-                                return {'success': False, 'error': 'Invalid optimization order from AI'}
+                                return {'success': False, 'error': 'Invalid optimization order from Gemini AI'}
                     else:
                         error_text = await response.text()
                         print(f"Gemini API error: {response.status} - {error_text}")
-                        return {'success': False, 'error': f'API Error: {response.status}'}
+                        return {'success': False, 'error': f'Gemini API Error: {response.status}'}
         
         except Exception as e:
             print(f"Error calling Gemini API: {e}")

@@ -119,8 +119,8 @@ def api_find_fuel_stations(request):
 
 @csrf_exempt
 @require_http_methods(["POST"])
-def api_ai_optimize_route(request):
-    """API endpoint for AI route optimization"""
+def api_gemini_optimize_route(request):
+    """API endpoint for Gemini AI route optimization"""
     data = json.loads(request.body)
     stops = data.get('stops', [])
     
@@ -129,20 +129,20 @@ def api_ai_optimize_route(request):
     
     service = RouteOptimizationService()
     
-    # Run async AI optimization
+    # Run async Gemini optimization
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
-        result = loop.run_until_complete(service.ai_optimize_route(stops))
+        result = loop.run_until_complete(service.gemini_optimize_route(stops))
         
-        # If AI fails, use fallback optimization
+        # If Gemini fails, use fallback optimization
         if not result.get('success'):
             fallback_order = service.create_fallback_optimization(stops)
             result = {
                 'success': True,
                 'optimal_order': fallback_order,
                 'fallback': True,
-                'ai_response': 'Used fallback optimization'
+                'gemini_response': 'Used fallback optimization (Gemini unavailable)'
             }
         
         return JsonResponse(result)
@@ -161,19 +161,19 @@ def save_route_optimization(request, route_id):
     optimized_order = data.get('optimized_order', [])
     distance_before = data.get('distance_before', 0)
     distance_after = data.get('distance_after', 0)
-    ai_response = data.get('ai_response', '')
+    gemini_response = data.get('gemini_response', '')  # Updated from ai_response
     
     # Create optimization record
     optimization = RouteOptimization.objects.create(
         route=route,
-        optimization_type=optimization_type,
+        optimization_type='gemini_ai' if optimization_type == 'ai' else optimization_type,  # Updated
         original_order=original_order,
         optimized_order=optimized_order,
         distance_before=distance_before,
         distance_after=distance_after,
         distance_saved=distance_before - distance_after,
         fuel_savings=((distance_before - distance_after) * 0.621371 / route.avg_mpg * float(route.fuel_price)),
-        ai_response=ai_response
+        gemini_response=gemini_response  # Updated from ai_response
     )
     
     # Update route status
