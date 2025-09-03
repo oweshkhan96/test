@@ -1770,3 +1770,82 @@ D:\Dev\fuelmng\analytics\models.py changed, reloading.
 Watching for file changes with StatReloader
 Not Found: /dashboard/analytics-data/
 Not Found: /dashboard/analytics-data/
+Watching for file changes with StatReloader
+Not Found: /route-optimizor/
+D:\Dev\fuelmng\fuel_management\settings.py changed, reloading.
+Watching for file changes with StatReloader
+D:\Dev\fuelmng\routes\models.py changed, reloading.
+Watching for file changes with StatReloader
+D:\Dev\fuelmng\fuel_management\urls.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Not Found: /routes/
+D:\Dev\fuelmng\fuel_management\urls.py changed, reloading.
+Watching for file changes with StatReloader
+Not Found: /routes/
+Not Found: /routes-optimizer/
+Not Found: /routes-optimizer/
+Not Found: /route-optimizer/
+Not Found: /route-optimizer/
+D:\Dev\fuelmng\routes\views.py changed, reloading.
+Watching for file changes with StatReloader
+D:\Dev\fuelmng\routes\urls.py changed, reloading.
+Watching for file changes with StatReloader
+Internal Server Error: /route-optimizer/
+Traceback (most recent call last):
+  File "C:\Users\owesh\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\owesh\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\owesh\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\fuelmng\routes\views.py", line 361, in dashboard
+    return render(request, 'routes/dashboard.html')
+           ^^^^^^
+NameError: name 'render' is not defined
+Internal Server Error: /route-optimizer/
+Traceback (most recent call last):
+  File "C:\Users\owesh\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\owesh\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\owesh\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\fuelmng\routes\views.py", line 361, in dashboard
+    return render(request, 'routes/dashboard.html')
+           ^^^^^^
+NameError: name 'render' is not defined
+Internal Server Error: /route-optimizer/
+Traceback (most recent call last):
+  File "C:\Users\owesh\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\owesh\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\owesh\AppData\Local\Programs\Python\Python312\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Dev\fuelmng\routes\views.py", line 361, in dashboard
+    return render(request, 'routes/dashboard.html')
+           ^^^^^^
+NameError: name 'render' is not defined
+D:\Dev\fuelmng\routes\views.py changed, reloading.
+Watching for file changes with StatReloader
+Not Found: /route-optimizer/api/calculate-route/
+Not Found: /route-optimizer/api/calculate-route/
+Not Found: /route-optimizer/api/calculate-route/
+Not Found: /route-optimizer/api/gemini-optimize/
+D:\Dev\fuelmng\routes\views.py changed, reloading.
+Watching for file changes with StatReloader
+D:\Dev\fuelmng\routes\urls.py changed, reloading.
+Watching for file changes with StatReloader
+D:\Dev\fuelmng\fuel_management\urls.py changed, reloading.
+Watching for file changes with StatReloader

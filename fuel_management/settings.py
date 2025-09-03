@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'analytics',
     'mobile_api',
     'dashboard',
+    'routes',
 ]
 GEOAPIFY_API_KEY = '053f0cbc8d894135bd0fdb09c21d1620'
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', 'your_gemini_api_key_here')
