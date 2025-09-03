@@ -18,7 +18,7 @@ class Vehicle(models.Model):
     year = models.IntegerField()
     fuel_type = models.CharField(max_length=10, choices=FUEL_TYPES)
     tank_capacity = models.DecimalField(max_digits=6, decimal_places=2)
-    average_mpg = models.DecimalField(max_digits=5, decimal_places=2, default=25.0)
+    averagekmpl = models.DecimalField(max_digits=5, decimal_places=2, default=10.0)
     assigned_driver = models.ForeignKey('accounts.CustomUser', on_delete=models.SET_NULL, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)

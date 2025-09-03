@@ -550,7 +550,7 @@
                                         <strong>License Plate:</strong> {{ vehicle.license_plate }}<br>
                                         <strong>Fuel Type:</strong> {{ vehicle.get_fuel_type_display }}<br>
                                         <strong>Tank Capacity:</strong> {{ vehicle.tank_capacity|default:"N/A" }} L<br>
-                                        <strong>Average Efficiency:</strong> {{ vehicle.average_mpg|default:"N/A" }} km/L
+                                        <strong>Average Efficiency:</strong> {{ vehicle.averagekmpl|default:"N/A" }} km/L
                                     </div>
                                 </div>
                             {% endfor %}

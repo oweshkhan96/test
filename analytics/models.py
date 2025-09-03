@@ -19,7 +19,7 @@ class FuelAnalytics(models.Model):
     
     total_gallons = models.DecimalField(max_digits=10, decimal_places=3, default=0)
     total_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    average_mpg = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    averagekmpl = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     cost_per_mile = models.DecimalField(max_digits=6, decimal_places=3, default=0)
     
     # Anomaly detection

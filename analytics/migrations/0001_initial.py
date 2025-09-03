@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('period_end', models.DateField()),
                 ('total_gallons', models.DecimalField(decimal_places=3, default=0, max_digits=10)),
                 ('total_cost', models.DecimalField(decimal_places=2, default=0, max_digits=10)),
-                ('average_mpg', models.DecimalField(decimal_places=2, default=0, max_digits=6)),
+                ('averagekmpl', models.DecimalField(decimal_places=2, default=0, max_digits=6)),
                 ('cost_per_mile', models.DecimalField(decimal_places=3, default=0, max_digits=6)),
                 ('anomaly_score', models.FloatField(default=0.0)),
                 ('is_anomaly', models.BooleanField(default=False)),

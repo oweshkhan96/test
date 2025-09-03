@@ -39,10 +39,10 @@ class FuelAnalyticsService:
             first_reading = odometer_readings.first().odometer_reading
             last_reading = odometer_readings.last().odometer_reading
             miles_driven = last_reading - first_reading
-            average_mpg = miles_driven / total_gallons if total_gallons > 0 else 0
+            averagekmpl = miles_driven / total_gallons if total_gallons > 0 else 0
             cost_per_mile = total_cost / miles_driven if miles_driven > 0 else 0
         else:
-            average_mpg = vehicle.average_mpg  # Use vehicle's default
+            averagekmpl = vehicle.averagekmpl  # Use vehicle's default
             cost_per_mile = 0
         
         # Check for anomalies
@@ -50,7 +50,7 @@ class FuelAnalyticsService:
             'vehicle_id': vehicle.id,
             'total_gallons': float(total_gallons),
             'total_cost': float(total_cost),
-            'average_mpg': float(average_mpg),
+            'averagekmpl': float(averagekmpl),
             'avg_price_per_gallon': float(avg_price_per_gallon),
             'period_days': period_days,
             'receipt_count': receipts.count()
@@ -66,7 +66,7 @@ class FuelAnalyticsService:
                 'period_end': end_date,
                 'total_gallons': total_gallons,
                 'total_cost': total_cost,
-                'average_mpg': average_mpg,
+                'averagekmpl': averagekmpl,
                 'cost_per_mile': cost_per_mile,
                 'anomaly_score': anomaly_result.get('anomaly_score', 0.0),
                 'is_anomaly': anomaly_result.get('is_anomaly', False),
@@ -88,7 +88,7 @@ You are a fleet management analyst. Analyze this vehicle's fuel consumption data
 Vehicle Data:
 - Total Gallons: {vehicle_data['total_gallons']}
 - Total Cost: ${vehicle_data['total_cost']}
-- Average MPG: {vehicle_data['average_mpg']}
+- Average mpg: {vehicle_data['averagekmpl']}
 - Average Price/Gallon: ${vehicle_data['avg_price_per_gallon']}
 - Period: {vehicle_data['period_days']} days
 - Number of Fill-ups: {vehicle_data['receipt_count']}
@@ -109,7 +109,7 @@ Return a JSON response with:
 }}
 
 Consider industry averages: 
-- Commercial vehicles typically get 15-25 MPG
+- Commercial vehicles typically get 15-25 mpg
 - Fuel costs vary by region but should be consistent over time
 - Normal fill-up frequency is every 2-5 days for active vehicles
         """
@@ -143,8 +143,8 @@ Consider industry averages:
         reasons = []
         anomaly_score = 0.0
         
-        # Check MPG efficiency
-        if vehicle_data['average_mpg'] < 10:
+        # Check mpg efficiency
+        if vehicle_data['average_kmpl'] < 4:
             reasons.append("Very low fuel efficiency detected")
             anomaly_score += 0.3
         
@@ -155,7 +155,7 @@ Consider industry averages:
             anomaly_score += 0.2
         
         # Check cost consistency
-        if vehicle_data['avg_price_per_gallon'] > 6.0:  # Unusually high price
+        if vehicle_data['avg_price_per_liter'] > 120.0:  # Unusually high price
             reasons.append("Higher than normal fuel prices")
             anomaly_score += 0.1
         

@@ -172,7 +172,7 @@ def save_route_optimization(request, route_id):
         distance_before=distance_before,
         distance_after=distance_after,
         distance_saved=distance_before - distance_after,
-        fuel_savings=((distance_before - distance_after) * 0.621371 / route.avg_mpg * float(route.fuel_price)),
+        fuel_savings=((distance_before - distance_after) * 0.621371 / route.avg_kmpl * float(route.fuel_price)),
         gemini_response=gemini_response  # Updated from ai_response
     )
     

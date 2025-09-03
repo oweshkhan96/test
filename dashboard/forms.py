@@ -10,7 +10,7 @@ class VehicleForm(forms.ModelForm):
     class Meta:
         model = Vehicle
         fields = ['license_plate', 'make', 'model', 'year', 'fuel_type', 
-                  'assigned_driver', 'tank_capacity', 'average_mpg', 'is_active']
+                  'assigned_driver', 'tank_capacity', 'averagekmpl', 'is_active']
         widgets = {
             'license_plate': forms.TextInput(attrs={
                 'class': 'form-control', 
@@ -41,7 +41,7 @@ class VehicleForm(forms.ModelForm):
                 'min': '0.1',
                 'placeholder': '5.5'
             }),
-            'average_mpg': forms.NumberInput(attrs={
+            'averagekmpl': forms.NumberInput(attrs={
                 'class': 'form-control', 
                 'step': '0.1',
                 'min': '1',
@@ -57,7 +57,7 @@ class VehicleForm(forms.ModelForm):
             'fuel_type': 'Fuel Type *',
             'assigned_driver': 'Assigned Driver',
             'tank_capacity': 'Tank Capacity (gallons)',
-            'average_mpg': 'Average MPG',
+            'averagekmpl': 'Average mpg',
             'is_active': 'Active Vehicle',
         }
 
@@ -119,15 +119,15 @@ class VehicleForm(forms.ModelForm):
         """Additional form validation"""
         cleaned_data = super().clean()
         tank_capacity = cleaned_data.get('tank_capacity')
-        average_mpg = cleaned_data.get('average_mpg')
+        averagekmpl = cleaned_data.get('averagekmpl')
         
         # Validate tank capacity
         if tank_capacity is not None and tank_capacity <= 0:
             self.add_error('tank_capacity', 'Tank capacity must be greater than 0.')
             
-        # Validate average MPG
-        if average_mpg is not None and average_mpg <= 0:
-            self.add_error('average_mpg', 'Average MPG must be greater than 0.')
+        # Validate average mpg
+        if averagekmpl is not None and averagekmpl <= 0:
+            self.add_error('averagekmpl', 'Average mpg must be greater than 0.')
             
         return cleaned_data
 

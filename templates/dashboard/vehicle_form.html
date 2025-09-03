@@ -93,7 +93,7 @@
                             {% endif %}
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="{{ form.tank_capacity.id_for_label }}" class="form-label">Tank Capacity (gallons)</label>
+                                    <label for="{{ form.tank_capacity.id_for_label }}" class="form-label">Tank Capacity (Liters)</label>
                                     {{ form.tank_capacity }}
                                     {% if form.tank_capacity.errors %}
                                         <div class="text-danger">{{ form.tank_capacity.errors }}</div>
@@ -101,10 +101,10 @@
                                 </div>
                                 
                                 <div class="col-md-6 mb-3">
-                                    <label for="{{ form.average_mpg.id_for_label }}" class="form-label">Average MPG</label>
-                                    {{ form.average_mpg }}
-                                    {% if form.average_mpg.errors %}
-                                        <div class="text-danger">{{ form.average_mpg.errors }}</div>
+                                    <label for="{{ form.averagekmpl.id_for_label }}" class="form-label">Average kmpl</label>
+                                    {{ form.averagekmpl }}
+                                    {% if form.averagekmpl.errors %}
+                                        <div class="text-danger">{{ form.averagekmpl.errors }}</div>
                                     {% endif %}
                                 </div>
                             </div>

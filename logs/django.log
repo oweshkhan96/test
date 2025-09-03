@@ -1745,3 +1745,28 @@ Sending request to Gemini API for receipt #18...
 Receipt #18 processed successfully: total=20000.0 gallons=218.364 station=IndianOil
 Not Found: /dashboard/analytics-data/
 Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Not Found: /dashboard/analytics-data/
+Not Found: /dashboard/analytics-data/
+Processing receipt #19 with Gemini API...
+Sending request to Gemini API for receipt #19...
+Receipt #19 processed successfully: total=20000.0 gallons=218.364 station=IndianOil
+Not Found: /dashboard/analytics-data/
+D:\Dev\fuelmng\route_optimizer\migrations\0001_initial.py changed, reloading.
+Watching for file changes with StatReloader
+D:\Dev\fuelmng\dashboard\forms.py changed, reloading.
+Watching for file changes with StatReloader
+D:\Dev\fuelmng\route_optimizer\views.py changed, reloading.
+Watching for file changes with StatReloader
+D:\Dev\fuelmng\route_optimizer\views.py changed, reloading.
+Watching for file changes with StatReloader
+D:\Dev\fuelmng\vehicles\models.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Not Found: /dashboard/analytics-data/
+D:\Dev\fuelmng\analytics\models.py changed, reloading.
+Watching for file changes with StatReloader
+Not Found: /dashboard/analytics-data/
+Not Found: /dashboard/analytics-data/

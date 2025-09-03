@@ -23,7 +23,7 @@ class Route(models.Model):
     total_distance = models.FloatField(default=0.0)  # in km
     total_duration = models.IntegerField(default=0)  # in minutes
     fuel_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    fuel_efficiency = models.FloatField(default=25.0)  # MPG
+    fuel_efficiency = models.FloatField(default=25.0)  # mpg
     
     # Vehicle configuration
     vehicle_type = models.CharField(max_length=50, default='delivery_van')

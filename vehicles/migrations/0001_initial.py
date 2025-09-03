@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('year', models.IntegerField()),
                 ('fuel_type', models.CharField(choices=[('petrol', 'Petrol'), ('diesel', 'Diesel'), ('hybrid', 'Hybrid'), ('electric', 'Electric')], max_length=10)),
                 ('tank_capacity', models.DecimalField(decimal_places=2, max_digits=6)),
-                ('average_mpg', models.DecimalField(decimal_places=2, default=25.0, max_digits=5)),
+                ('averagekmpl', models.DecimalField(decimal_places=2, default=25.0, max_digits=5)),
                 ('is_active', models.BooleanField(default=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('assigned_driver', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),

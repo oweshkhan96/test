@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🤖 Gemini AI Route Optimizer - Smart Fuel Management</title>
+    <title>🤖 Route Optimizer - Smart Fuel Management</title>
     
     <!-- External CSS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         * {
@@ -21,46 +21,119 @@
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #f5f6fa;
-            height: 100vh;
-            overflow: hidden;
+            background-color: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
         }
         
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        /* Navigation - Exact same as fleet dashboard */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            padding: 0 24px;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         
-        .header h1 {
-            font-size: 24px;
-            font-weight: 600;
-        }
-        
-        .header .stats {
+        .navbar-left {
             display: flex;
-            gap: 20px;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 20px;
+            color: #1c4e80;
+            text-decoration: none;
+        }
+        
+        .navbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .nav-link {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+            text-decoration: none;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: #f1f5f9;
+        }
+        
+        .user-avatar img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+        
+        .user-name {
+            font-weight: 600;
             font-size: 14px;
         }
         
-        /* Container */
+        .user-role {
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        /* Main Content Layout */
         .container {
             display: flex;
             height: calc(100vh - 70px);
+            margin-top: 70px;
         }
         
-        /* Sidebar */
+        /* Sidebar - Clean design */
         .sidebar {
-            width: 350px;
+            width: 400px;
             background: white;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
             overflow-y: auto;
-            z-index: 1000;
+            z-index: 999;
+            border-right: 1px solid #e2e8f0;
+        }
+        
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .sidebar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
         }
         
         /* Map */
@@ -72,35 +145,44 @@
         
         /* Sidebar Sections */
         .sidebar-section {
-            padding: 20px;
-            border-bottom: 1px solid #eee;
+            padding: 24px;
+            border-bottom: 1px solid #e2e8f0;
         }
         
         .sidebar-section h3 {
-            margin-bottom: 15px;
-            color: #2c3e50;
-            font-size: 16px;
+            margin-bottom: 16px;
+            color: #1e293b;
+            font-size: 18px;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         /* Search */
         .search-container {
             position: relative;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         
         .search-input {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e1e8ed;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
             border-radius: 8px;
             font-size: 14px;
-            transition: border-color 0.3s;
+            transition: all 0.2s;
+            background: white;
         }
         
         .search-input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .search-input::placeholder {
+            color: #94a3b8;
         }
         
         /* Suggestions */
@@ -110,119 +192,125 @@
             left: 0;
             right: 0;
             background: white;
-            border: 1px solid #e1e8ed;
+            border: 1px solid #e2e8f0;
             border-radius: 0 0 8px 8px;
-            max-height: 200px;
+            max-height: 250px;
             overflow-y: auto;
             z-index: 1001;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         
         .suggestion-item {
-            padding: 12px 15px;
+            padding: 12px 16px;
             cursor: pointer;
-            border-bottom: 1px solid #f8f9fa;
-            transition: background-color 0.2s;
+            border-bottom: 1px solid #f8fafc;
+            transition: all 0.2s;
         }
         
         .suggestion-item:hover {
-            background-color: #f8f9fa;
+            background: #f8fafc;
         }
         
         .suggestion-item:last-child {
             border-bottom: none;
         }
         
-        /* Buttons */
+        /* Buttons - Clean design like fleet dashboard */
         .btn {
-            padding: 10px 15px;
-            border: none;
+            padding: 8px 16px;
+            border: 1px solid #e2e8f0;
             border-radius: 6px;
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            position: relative;
+            background: white;
+            color: #475569;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            color: #1e293b;
+            text-decoration: none;
         }
         
         .btn-primary {
-            background: #667eea;
+            background: #3b82f6;
             color: white;
+            border-color: #3b82f6;
         }
         
         .btn-primary:hover {
-            background: #5a67d8;
-            transform: translateY(-1px);
-        }
-        
-        .btn-danger {
-            background: #e53e3e;
+            background: #2563eb;
             color: white;
-        }
-        
-        .btn-danger:hover {
-            background: #c53030;
         }
         
         .btn-success {
-            background: #38a169;
+            background: #10b981;
             color: white;
+            border-color: #10b981;
         }
         
         .btn-success:hover {
-            background: #2f855a;
-        }
-        
-        .btn-gemini {
-            background: linear-gradient(135deg, #4285f4, #34a853);
+            background: #059669;
             color: white;
-            box-shadow: 0 4px 15px rgba(66, 133, 244, 0.4);
-            border: none;
-            position: relative;
-            overflow: hidden;
         }
         
-        .btn-gemini:hover {
-            background: linear-gradient(135deg, #3367d6, #2e8b4f);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(66, 133, 244, 0.6);
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
         }
         
-        .btn-gemini::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, #4285f4, #34a853, #fbbc05, #ea4335);
-            border-radius: inherit;
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        
-        .btn-gemini:hover::before {
-            opacity: 0.7;
+        .btn-danger:hover {
+            background: #dc2626;
+            color: white;
         }
         
         .btn-secondary {
-            background: #718096;
+            background: #6b7280;
             color: white;
+            border-color: #6b7280;
         }
         
         .btn-secondary:hover {
-            background: #4a5568;
+            background: #4b5563;
+            color: white;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
         }
         
         /* Controls */
         .controls {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        
+        .controls .btn {
+            flex: 1;
+            min-width: 120px;
+            justify-content: center;
+        }
+        
+        /* Info boxes */
+        .info-box {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-top: 16px;
+            font-size: 13px;
+            color: #0c4a6e;
         }
         
         /* Loading overlay */
@@ -239,15 +327,15 @@
             align-items: center;
             z-index: 10000;
             color: white;
-            font-size: 20px;
+            font-size: 18px;
             text-align: center;
         }
         
         .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid #333;
-            border-top: 4px solid #4285f4;
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #3b82f6;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-bottom: 20px;
@@ -264,18 +352,21 @@
         }
         
         .stop-item {
-            background: #f8f9fa;
+            background: #f8fafc;
             margin-bottom: 8px;
-            padding: 12px;
-            border-radius: 6px;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: transform 0.2s;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         
         .stop-item:hover {
-            transform: translateX(2px);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         
         .stop-info {
@@ -283,111 +374,196 @@
         }
         
         .stop-name {
-            font-weight: 500;
-            color: #2d3748;
-            margin-bottom: 2px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+            font-size: 14px;
         }
         
         .stop-details {
             font-size: 12px;
-            color: #718096;
+            color: #64748b;
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
         }
         
         .stop-actions {
             display: flex;
-            gap: 5px;
+            gap: 4px;
         }
         
-        .btn-sm {
-            padding: 6px 10px;
-            font-size: 12px;
-        }
-        
-        /* Route info */
+        /* Route info card */
         .route-info {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         
-        .route-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 10px;
-        }
-        
-        .stat-item {
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 20px;
+        .route-info h4 {
+            font-size: 16px;
             font-weight: 600;
-        }
-        
-        .stat-label {
-            font-size: 12px;
-            opacity: 0.9;
-        }
-        
-        /* Gemini AI suggestions */
-        .gemini-suggestion {
-            background: linear-gradient(135deg, #4285f4, #34a853);
-            color: white;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .gemini-suggestion h4 {
-            margin-bottom: 10px;
-            font-size: 14px;
+            margin-bottom: 16px;
+            color: #1e293b;
             display: flex;
             align-items: center;
             gap: 8px;
         }
         
-        .gemini-suggestion p {
+        .route-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #1e293b;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+        
+        /* AI suggestions */
+        .ai-suggestion {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .ai-suggestion h4 {
+            margin-bottom: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .ai-suggestion p {
             font-size: 13px;
-            line-height: 1.4;
-            opacity: 0.9;
+            line-height: 1.5;
+            color: #64748b;
+        }
+        
+        .ai-badge {
+            background: #3b82f6;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         /* Fuel stations */
         .fuel-stations {
-            margin-top: 15px;
+            margin-top: 16px;
         }
         
         .fuel-station {
-            background: #f0f8ff;
-            border: 1px solid #bee3f8;
-            border-radius: 6px;
-            padding: 10px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
             margin-bottom: 8px;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: all 0.2s;
+            border-left: 4px solid #10b981;
         }
         
         .fuel-station:hover {
-            background-color: #e6f3ff;
-        }
-        
-        .fuel-station.route-station {
-            background: #fff5f5;
-            border: 1px solid #fed7d7;
-        }
-        
-        .fuel-station.route-station:hover {
-            background-color: #fef5e7;
+            background: #f1f5f9;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         
         .fuel-price {
             font-weight: 600;
-            color: #2b6cb0;
+            color: #059669;
+            font-size: 14px;
+        }
+        
+        /* Instructions */
+        .instructions {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .instructions::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .instructions::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        
+        .instructions::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 2px;
+        }
+        
+        .instruction-step {
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .instruction-step:last-child {
+            border-bottom: none;
+        }
+        
+        .instruction-step div:first-child {
+            font-weight: 500;
+            color: #1e293b;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+        
+        .step-distance {
+            font-size: 12px;
+            color: #64748b;
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+        }
+        
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
         }
         
         /* Responsive */
@@ -398,82 +574,152 @@
             
             .sidebar {
                 width: 100%;
-                height: 40vh;
+                height: 50vh;
             }
             
             #map {
-                height: 60vh;
+                height: 50vh;
+            }
+            
+            .controls .btn {
+                min-width: auto;
             }
         }
         
-        .gemini-badge {
-            background: linear-gradient(45deg, #4285f4, #34a853);
-            color: white;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 10px;
-            margin-left: 5px;
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <h1>🤖 Gemini AI-Powered Fleet Route Optimizer</h1>
-        <div class="stats">
-            <div><i class="fas fa-gas-pump"></i> <span id="total-fuel-cost">$0</span></div>
-            <div><i class="fas fa-road"></i> <span id="total-distance">0 km</span></div>
-            <div><i class="fas fa-clock"></i> <span id="total-time">0 min</span></div>
+    <!-- Top Navbar - Exact same as fleet dashboard -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="#1C4E80"/>
+                    <text x="6" y="22" fill="white" font-family="Inter" font-weight="700" font-size="12">🗺️</text>
+                </svg>
+                <span>Route Optimizer</span>
+            </div>
         </div>
-    </div>
+        
+        <div class="navbar-right">
+            <a href="/dashboard/" class="nav-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9,22 9,12 15,12 15,22"></polyline>
+                </svg>
+                Dashboard
+            </a>
+            
+            <div class="user-menu">
+                <div class="user-avatar">
+                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" alt="User Avatar">
+                </div>
+                <div class="user-info">
+                    <div class="user-name">{{ user.get_full_name|default:user.username }}</div>
+                    <div class="user-role">Fleet Manager</div>
+                </div>
+            </div>
+        </div>
+    </nav>
 
     <div class="container">
         <!-- Sidebar -->
         <div id="sidebar" class="sidebar">
             <!-- Route Planning Section -->
             <div class="sidebar-section">
-                <h3><i class="fas fa-map-marker-alt"></i> Route Planning</h3>
+                <h3>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    Route Planning
+                </h3>
+                
                 <div class="search-container">
                     <input type="text" id="search-input" class="search-input" 
-                           placeholder="Search for stops, addresses, or fuel stations..." autocomplete="off">
+                           placeholder="Search for stops, addresses, fuel stations..." autocomplete="off">
                     <div id="suggestions" class="suggestions" style="display:none;"></div>
                 </div>
                 
                 <div class="controls">
                     <button id="enable-manual-pin" class="btn btn-secondary btn-sm">
-                        <i class="fas fa-map-pin"></i> Click to Pin
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        Click to Pin
                     </button>
-                    <button id="gemini-optimize-route" class="btn btn-gemini btn-sm">
-                        <i class="fab fa-google"></i> Gemini AI Optimize
-                    </button>
-                    <button id="optimize-route" class="btn btn-success btn-sm">
-                        <i class="fas fa-magic"></i> Standard Optimize
-                    </button>
-                    <button id="clear-all" class="btn btn-danger btn-sm">
-                        <i class="fas fa-trash"></i> Clear All
+                    <button id="ai-optimize-route" class="btn btn-primary btn-sm">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="m9 12 2 2 4-4"></path>
+                        </svg>
+                        AI Optimize
+                        <span class="ai-badge">AI</span>
                     </button>
                 </div>
                 
-                <div class="manual-pin-info">
-                    <strong>Tip:</strong> Click anywhere on the map to add a custom stop at that location!
+                <div class="controls">
+                    <button id="optimize-route" class="btn btn-success btn-sm">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                            <path d="M2 17l10 5 10-5"></path>
+                            <path d="M2 12l10 5 10-5"></path>
+                        </svg>
+                        Standard Optimize
+                    </button>
+                    <button id="clear-all" class="btn btn-danger btn-sm">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <polyline points="3,6 5,6 21,6"></polyline>
+                            <path d="m19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"></path>
+                        </svg>
+                        Clear All
+                    </button>
+                </div>
+                
+                <div class="info-box">
+                    <strong>Tip:</strong> Click anywhere on the map to add custom stops at specific locations.
                 </div>
             </div>
 
-            <!-- Gemini AI Suggestions Section -->
-            <div class="sidebar-section" id="gemini-suggestions-section" style="display:none;">
-                <div id="gemini-suggestions" class="gemini-suggestion">
+            <!-- AI Suggestions Section -->
+            <div class="sidebar-section" id="ai-suggestions-section" style="display:none;">
+                <div id="ai-suggestions" class="ai-suggestion">
                     <h4>
-                        <i class="fab fa-google"></i> 
-                        Gemini AI Route Insights
-                        <span class="gemini-badge">POWERED BY GEMINI</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="m9 12 2 2 4-4"></path>
+                        </svg>
+                        AI Route Insights
+                        <span class="ai-badge">Powered by AI</span>
                     </h4>
-                    <p id="gemini-suggestion-text">Gemini AI analysis will appear here...</p>
+                    <p id="ai-suggestion-text">AI analysis will appear here...</p>
                 </div>
             </div>
 
             <!-- Stops List Section -->
             <div class="sidebar-section">
-                <h3><i class="fas fa-list"></i> Route Stops <span id="stop-count">(0)</span></h3>
+                <h3>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <line x1="8" y1="6" x2="21" y2="6"></line>
+                        <line x1="8" y1="12" x2="21" y2="12"></line>
+                        <line x1="8" y1="18" x2="21" y2="18"></line>
+                        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                    </svg>
+                    Route Stops
+                    <span id="stop-count" style="background: #3b82f6; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin-left: 8px;">(0)</span>
+                </h3>
                 <ul id="stops-list" class="stop-list"></ul>
             </div>
 
@@ -481,7 +727,14 @@
             <div class="sidebar-section">
                 <div id="route-info" style="display:none;">
                     <div class="route-info">
-                        <h4><i class="fas fa-info-circle"></i> Route Summary</h4>
+                        <h4>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            Route Summary
+                        </h4>
                         <div class="route-stats">
                             <div class="stat-item">
                                 <div class="stat-value" id="route-distance">0</div>
@@ -497,27 +750,46 @@
                             </div>
                             <div class="stat-item">
                                 <div class="stat-value" id="fuel-efficiency">0</div>
-                                <div class="stat-label">MPG</div>
+                                <div class="stat-label">Efficiency</div>
                             </div>
                         </div>
                     </div>
-                    <div id="efficiency-alert"></div>
                 </div>
             </div>
 
             <!-- Fuel Stations Section -->
             <div class="sidebar-section">
-                <h3><i class="fas fa-gas-pump"></i> Fuel Pumps Along Route</h3>
+                <h3>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M3 12h18l-3-3m0 6l3-3"></path>
+                    </svg>
+                    Fuel Stations Along Route
+                </h3>
                 <div id="fuel-stations" class="fuel-stations">
-                    <p style="color: #718096; text-align: center;">Plan a route to see fuel pumps along the way</p>
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M3 12h18l-3-3m0 6l3-3"></path>
+                        </svg>
+                        <p>Plan a route to discover fuel stations</p>
+                    </div>
                 </div>
             </div>
 
             <!-- Turn-by-Turn Instructions -->
             <div class="sidebar-section">
-                <h3><i class="fas fa-directions"></i> Turn-by-Turn Directions</h3>
+                <h3>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <polygon points="3,11 22,2 13,21 11,13 3,11"></polygon>
+                    </svg>
+                    Navigation Instructions
+                </h3>
                 <div id="instructions" class="instructions">
-                    <p style="color: #718096; text-align: center;">Add at least 2 stops to see directions</p>
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <polygon points="3,11 22,2 13,21 11,13 3,11"></polygon>
+                        </svg>
+                        <p>Add at least 2 stops for turn-by-turn directions</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -529,12 +801,12 @@
     <!-- JavaScript -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Configuration - Updated to use Gemini
+        // Configuration
         const GEOAPIFY_API_KEY = '{{ geoapify_api_key }}';
         const GEMINI_API_KEY = '{{ gemini_api_key }}';
         
-        // Smart Fleet Mapper Class
-        class SmartFleetMapper {
+        // Route Optimizer Class - Clean implementation
+        class RouteOptimizer {
             constructor() {
                 this.GEOAPIFY_API_KEY = GEOAPIFY_API_KEY;
                 this.GEMINI_API_KEY = GEMINI_API_KEY;
@@ -543,14 +815,12 @@
                 this.routeLine = null;
                 this.stops = [];
                 this.fuelStations = [];
-                this.routeFuelStations = [];
                 this.currentRoute = null;
                 this.manualPinEnabled = true;
                 this.vehicleConfig = {
-                    avgMPG: 25,
-                    fuelCapacity: 20,
-                    fuelPrice: 3.50,
-                    vehicleType: 'delivery_van'
+                    avgKMPL: 10,        // Changed from avgMPG: 25 
+                    fuelCapacity: 20,   // Keep in liters
+                    fuelPrice: 110.0    // Changed from 3.50 to INR per liter
                 };
                 
                 this.init();
@@ -562,14 +832,16 @@
             }
             
             initMap() {
-                // Start with Jodhpur, India as default view
+                // Initialize map centered on a default location
                 this.map = L.map('map').setView([26.2389, 73.0243], 12);
                 
+                // Add tile layer
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '© OpenStreetMap contributors',
                     maxZoom: 19
                 }).addTo(this.map);
                 
+                // Initialize marker group
                 this.markerGroup = L.layerGroup().addTo(this.map);
                 
                 // Add click event for manual pin placement
@@ -589,6 +861,7 @@
                 const suggestions = document.getElementById('suggestions');
                 let searchTimeout = null;
                 
+                // Search input event
                 searchInput.addEventListener('input', () => {
                     clearTimeout(searchTimeout);
                     const query = searchInput.value.trim();
@@ -608,15 +881,14 @@
                     }
                 });
                 
-                // Button events - Updated for Gemini
+                // Button events
                 document.getElementById('enable-manual-pin').addEventListener('click', () => this.toggleManualPinMode());
-                document.getElementById('gemini-optimize-route').addEventListener('click', () => this.geminiOptimizeRoute());
+                document.getElementById('ai-optimize-route').addEventListener('click', () => this.aiOptimizeRoute());
                 document.getElementById('optimize-route').addEventListener('click', () => this.optimizeRoute());
                 document.getElementById('clear-all').addEventListener('click', () => this.clearAllStops());
             }
             
             showLoadingOverlay(message) {
-                // Remove any existing overlay
                 this.hideLoadingOverlay();
                 
                 const overlay = document.createElement('div');
@@ -624,8 +896,8 @@
                 overlay.className = 'loading-overlay';
                 overlay.innerHTML = `
                     <div class="loading-spinner"></div>
-                    <div style="margin-bottom: 10px; font-weight: 600;">${message}</div>
-                    <div style="font-size: 14px; opacity: 0.8;">Powered by Google Gemini AI</div>
+                    <div style="font-weight: 600; margin-bottom: 8px;">${message}</div>
+                    <div style="font-size: 14px; opacity: 0.8;">Powered by AI Route Optimization</div>
                 `;
                 
                 document.body.appendChild(overlay);
@@ -643,12 +915,24 @@
                 const btn = document.getElementById('enable-manual-pin');
                 
                 if (this.manualPinEnabled) {
-                    btn.innerHTML = '<i class="fas fa-map-pin"></i> Click to Pin';
+                    btn.innerHTML = `
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        Click to Pin
+                    `;
                     btn.className = 'btn btn-secondary btn-sm';
                     this.map.getContainer().style.cursor = 'crosshair';
                     this.showAlert('Manual pin mode enabled. Click anywhere on the map to add stops.', 'info');
                 } else {
-                    btn.innerHTML = '<i class="fas fa-hand-pointer"></i> Pan Mode';
+                    btn.innerHTML = `
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M3 12h18"></path>
+                            <path d="M12 3v18"></path>
+                        </svg>
+                        Pan Mode
+                    `;
                     btn.className = 'btn btn-primary btn-sm';
                     this.map.getContainer().style.cursor = '';
                     this.showAlert('Manual pin mode disabled. Map is now in pan mode.', 'info');
@@ -686,8 +970,8 @@
                     const div = document.createElement('div');
                     div.className = 'suggestion-item';
                     div.innerHTML = `
-                        <div style="font-weight: 500;">${feature.name || 'Unknown'}</div>
-                        <div style="font-size: 12px; color: #718096;">${feature.formatted}</div>
+                        <div style="font-weight: 500; color: #1e293b; margin-bottom: 2px;">${feature.name || 'Unknown Location'}</div>
+                        <div style="font-size: 12px; color: #64748b;">${feature.formatted}</div>
                     `;
                     
                     div.onclick = () => {
@@ -739,15 +1023,29 @@
             clearAllStops() {
                 this.stops = [];
                 this.fuelStations = [];
-                this.routeFuelStations = [];
                 this.updateStopsList();
                 this.updateMarkers();
                 this.clearRoute();
                 this.updateStats();
                 
                 document.getElementById('route-info').style.display = 'none';
-                document.getElementById('gemini-suggestions-section').style.display = 'none';
-                document.getElementById('fuel-stations').innerHTML = '<p style="color: #718096; text-align: center;">Plan a route to see fuel pumps along the way</p>';
+                document.getElementById('ai-suggestions-section').style.display = 'none';
+                document.getElementById('fuel-stations').innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M3 12h18l-3-3m0 6l3-3"></path>
+                        </svg>
+                        <p>Plan a route to discover fuel stations</p>
+                    </div>
+                `;
+                document.getElementById('instructions').innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <polygon points="3,11 22,2 13,21 11,13 3,11"></polygon>
+                        </svg>
+                        <p>Add at least 2 stops for turn-by-turn directions</p>
+                    </div>
+                `;
             }
             
             async calculateRoute() {
@@ -800,8 +1098,8 @@
                     const data = await response.json();
                     
                     if (data.success) {
-                        this.routeFuelStations = data.fuel_stations;
-                        this.displayRouteFuelStations();
+                        this.fuelStations = data.fuel_stations;
+                        this.displayFuelStations();
                         this.updateMarkers();
                     }
                 } catch (error) {
@@ -809,14 +1107,13 @@
                 }
             }
             
-            async geminiOptimizeRoute() {
+            async aiOptimizeRoute() {
                 if (this.stops.length < 3) {
-                    this.showAlert('Need at least 3 stops for Gemini AI optimization', 'warning');
+                    this.showAlert('Need at least 3 stops for AI optimization', 'warning');
                     return;
                 }
                 
-                // Show loading overlay
-                this.showLoadingOverlay('🤖 Gemini AI Route Optimization in Progress');
+                this.showLoadingOverlay('AI Route Optimization in Progress');
                 
                 try {
                     const originalDistance = this.currentRoute ? this.currentRoute.distance.toFixed(2) : '0';
@@ -833,28 +1130,25 @@
                     const data = await response.json();
                     
                     if (data.success && Array.isArray(data.optimal_order)) {
-                        await this.applyGeminiOptimization(data.optimal_order, originalDistance, data.gemini_response);
-                        
-                        // Show Gemini-specific success message
-                        this.showAlert('🤖 Route optimized successfully using Google Gemini AI!', 'success');
+                        await this.applyAIOptimization(data.optimal_order, originalDistance, data.gemini_response);
+                        this.showAlert('Route optimized successfully using AI!', 'success');
                     } else {
-                        throw new Error(data.error || 'Gemini AI returned invalid optimization order');
+                        throw new Error(data.error || 'AI returned invalid optimization order');
                     }
                 } catch (error) {
-                    console.error('Gemini AI optimization error:', error);
-                    this.showAlert(`🤖 Gemini AI optimization failed: ${error.message}`, 'error');
+                    console.error('AI optimization error:', error);
+                    this.showAlert(`AI optimization failed: ${error.message}`, 'error');
                 } finally {
-                    // Hide loading overlay
                     this.hideLoadingOverlay();
                 }
             }
             
-            async applyGeminiOptimization(optimizedOrder, originalDistance, geminiResponse = '') {
+            async applyAIOptimization(optimizedOrder, originalDistance, aiResponse = '') {
                 if (!Array.isArray(optimizedOrder) || optimizedOrder.length !== this.stops.length) {
                     throw new Error(`Invalid order length: expected ${this.stops.length}, got ${optimizedOrder.length}`);
                 }
                 
-                // Reorder stops based on Gemini AI optimization
+                // Reorder stops based on AI optimization
                 const reorderedStops = optimizedOrder.map(id => this.stops[id - 1]);
                 this.stops = reorderedStops;
                 
@@ -865,57 +1159,70 @@
                 const newDistance = this.currentRoute ? this.currentRoute.distance.toFixed(2) : '0';
                 const distanceSaved = originalDistance ? (parseFloat(originalDistance) - parseFloat(newDistance)).toFixed(2) : '0';
                 
-                let suggestionHtml = '<strong>🤖 Route Optimized by Google Gemini AI!</strong><br><br>';
+                let suggestionHtml = '<strong>Route Optimized by AI!</strong><br><br>';
                 suggestionHtml += `<strong>Original:</strong> ${originalDistance} km<br>`;
                 suggestionHtml += `<strong>Optimized:</strong> ${newDistance} km<br>`;
                 
                 if (distanceSaved > 0) {
                     suggestionHtml += `<strong>Distance Saved:</strong> ${distanceSaved} km<br>`;
                     
-                    const fuelSavings = (distanceSaved * 0.621371 / this.vehicleConfig.avgMPG * this.vehicleConfig.fuelPrice);
-                    suggestionHtml += `<strong>Fuel Savings:</strong> $${fuelSavings.toFixed(2)}<br>`;
-                    suggestionHtml += `<strong>AI Engine:</strong> Google Gemini 2.0 Flash`;
+                    const fuelSavings = (distanceSaved * 0.621371 / this.vehicleConfig.avgmpg * this.vehicleConfig.fuelPrice);
+                    suggestionHtml += `<strong>Fuel Savings:</strong> $${fuelSavings.toFixed(2)}`;
                 } else if (distanceSaved < 0) {
                     suggestionHtml += `<strong>Distance Change:</strong> +${Math.abs(distanceSaved)} km<br>`;
-                    suggestionHtml += `<strong>Note:</strong> Original route was already well optimized<br>`;
-                    suggestionHtml += `<strong>AI Engine:</strong> Google Gemini 2.0 Flash`;
+                    suggestionHtml += `<strong>Note:</strong> Original route was already well optimized`;
                 } else {
-                    suggestionHtml += `<strong>Route confirmed optimal by Gemini AI!</strong>`;
+                    suggestionHtml += `<strong>Route confirmed optimal by AI!</strong>`;
                 }
                 
-                this.displayGeminiSuggestions({ customMessage: suggestionHtml });
+                this.displayAISuggestions({ customMessage: suggestionHtml });
             }
             
-            displayGeminiSuggestions(geminiSuggestion) {
-                const suggestionsSection = document.getElementById('gemini-suggestions-section');
-                const suggestionsText = document.getElementById('gemini-suggestion-text');
+            displayAISuggestions(aiSuggestion) {
+                const suggestionsSection = document.getElementById('ai-suggestions-section');
+                const suggestionsText = document.getElementById('ai-suggestion-text');
                 
-                suggestionsText.innerHTML = geminiSuggestion.customMessage || 'Gemini AI optimization completed!';
+                suggestionsText.innerHTML = aiSuggestion.customMessage || 'AI optimization completed!';
                 suggestionsSection.style.display = 'block';
             }
             
             showAlert(message, type = 'info') {
                 const alertDiv = document.createElement('div');
-                alertDiv.className = `alert alert-${type}`;
                 alertDiv.style.cssText = `
+                    position: fixed;
+                    top: 90px;
+                    right: 20px;
                     padding: 12px 16px;
-                    margin: 10px 20px;
-                    border-radius: 6px;
+                    border-radius: 8px;
                     font-size: 14px;
-                    background: ${type === 'success' ? '#d1fae5' : type === 'error' ? '#fee2e2' : '#dbeafe'};
-                    color: ${type === 'success' ? '#065f46' : type === 'error' ? '#991b1b' : '#1e40af'};
-                    border: 1px solid ${type === 'success' ? '#a7f3d0' : type === 'error' ? '#fecaca' : '#93c5fd'};
+                    font-weight: 500;
+                    z-index: 10001;
+                    max-width: 350px;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                    animation: slideInRight 0.3s ease-out;
                 `;
-                alertDiv.innerHTML = `<i class="fas fa-info-circle"></i> ${message}`;
                 
-                const sidebar = document.getElementById('sidebar');
-                sidebar.insertBefore(alertDiv, sidebar.firstChild);
+                const colors = {
+                    success: { bg: '#d1fae5', color: '#065f46', border: '#10b981' },
+                    error: { bg: '#fee2e2', color: '#991b1b', border: '#ef4444' },
+                    warning: { bg: '#fef3c7', color: '#92400e', border: '#f59e0b' },
+                    info: { bg: '#dbeafe', color: '#1e40af', border: '#3b82f6' }
+                };
+                
+                const style = colors[type] || colors.info;
+                alertDiv.style.background = style.bg;
+                alertDiv.style.color = style.color;
+                alertDiv.style.border = `1px solid ${style.border}`;
+                
+                alertDiv.innerHTML = message;
+                document.body.appendChild(alertDiv);
                 
                 setTimeout(() => {
                     if (alertDiv.parentNode) {
-                        alertDiv.remove();
+                        alertDiv.style.animation = 'slideOutRight 0.3s ease-out forwards';
+                        setTimeout(() => alertDiv.remove(), 300);
                     }
-                }, 5000);
+                }, 4000);
             }
             
             updateStopsList() {
@@ -937,14 +1244,21 @@
                             <div class="stop-details">${stop.lat.toFixed(4)}, ${stop.lon.toFixed(4)}</div>
                         </div>
                         <div class="stop-actions">
-                            <button class="btn btn-primary btn-sm" onclick="mapper.moveStopUp(${stop.id})">
-                                <i class="fas fa-arrow-up"></i>
+                            <button class="btn btn-primary btn-sm" onclick="optimizer.moveStopUp(${stop.id})" title="Move Up">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="m18 15-6-6-6 6"/>
+                                </svg>
                             </button>
-                            <button class="btn btn-primary btn-sm" onclick="mapper.moveStopDown(${stop.id})">
-                                <i class="fas fa-arrow-down"></i>
+                            <button class="btn btn-primary btn-sm" onclick="optimizer.moveStopDown(${stop.id})" title="Move Down">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="m6 9 6 6 6-6"/>
+                                </svg>
                             </button>
-                            <button class="btn btn-danger btn-sm" onclick="mapper.removeStop(${stop.id})">
-                                <i class="fas fa-trash"></i>
+                            <button class="btn btn-danger btn-sm" onclick="optimizer.removeStop(${stop.id})" title="Remove">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <polyline points="3,6 5,6 21,6"></polyline>
+                                    <path d="m19,6v14a2,2,0,0,1-2,2H7a2,2,0,0,1-2-2V6m3,0V4a2,2,0,0,1,2-2h4a2,2,0,0,1,2,2V6"></path>
+                                </svg>
                             </button>
                         </div>
                     `;
@@ -983,15 +1297,15 @@
                     const isManual = stop.properties.manual;
                     const isFuelStation = stop.properties.fuelStation;
                     
-                    let bgColor = '#667eea'; // Default blue
-                    if (isStart) bgColor = '#38a169'; // Green for start
-                    if (isEnd) bgColor = '#e53e3e'; // Red for end
-                    if (isManual) bgColor = '#805ad5'; // Purple for manual pins
-                    if (isFuelStation) bgColor = '#e74c3c'; // Red for fuel stations
+                    let bgColor = '#3b82f6'; // Default blue
+                    if (isStart) bgColor = '#10b981'; // Green for start
+                    if (isEnd) bgColor = '#ef4444'; // Red for end
+                    if (isManual) bgColor = '#6b7280'; // Gray for manual pins
+                    if (isFuelStation) bgColor = '#f59e0b'; // Orange for fuel stations
                     
                     const icon = L.divIcon({
                         className: 'custom-marker',
-                        html: `<div style="background: ${bgColor}; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);">${index + 1}</div>`,
+                        html: `<div style="background: ${bgColor}; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">${index + 1}</div>`,
                         iconSize: [30, 30],
                         iconAnchor: [15, 15],
                         popupAnchor: [0, -15]
@@ -1001,8 +1315,8 @@
                     
                     const marker = L.marker([stop.lat, stop.lon], { icon: icon })
                         .bindPopup(`
-                            <div style="font-weight: bold; margin-bottom: 5px;">${stop.name}</div>
-                            <div style="font-size: 12px; color: #666;">
+                            <div style="font-weight: 600; margin-bottom: 8px; color: #1e293b;">${stop.name}</div>
+                            <div style="font-size: 12px; color: #64748b; line-height: 1.4;">
                                 <div><strong>Type:</strong> ${stopType}</div>
                                 <div><strong>Position:</strong> Stop ${index + 1} of ${this.stops.length}</div>
                                 <div><strong>Coordinates:</strong> ${stop.lat.toFixed(4)}, ${stop.lon.toFixed(4)}</div>
@@ -1013,10 +1327,10 @@
                 });
                 
                 // Add fuel station markers
-                this.routeFuelStations.forEach(station => {
+                this.fuelStations.forEach(station => {
                     const fuelIcon = L.divIcon({
-                        className: 'route-fuel-marker',
-                        html: `<div style="background: #e74c3c; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"><i class="fas fa-gas-pump" style="font-size: 10px;"></i></div>`,
+                        className: 'fuel-marker',
+                        html: `<div style="background: #059669; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 2px 8px rgba(5,150,105,0.3);"><span style="font-size: 10px;">⛽</span></div>`,
                         iconSize: [24, 24],
                         iconAnchor: [12, 12]
                     });
@@ -1025,15 +1339,15 @@
                     
                     const marker = L.marker([station.lat, station.lon], { icon: fuelIcon })
                         .bindPopup(`
-                            <div style="font-weight: bold; margin-bottom: 5px;">${displayName}</div>
-                            <div style="font-size: 12px;">
+                            <div style="font-weight: 600; margin-bottom: 8px; color: #1e293b;">${displayName}</div>
+                            <div style="font-size: 12px; line-height: 1.4;">
                                 <div><strong>Price:</strong> $${station.price.toFixed(2)}/gal</div>
                                 <div><strong>Distance from route:</strong> ${station.distance_from_route.toFixed(1)} km</div>
                                 ${station.fuel_type ? `<div><strong>Fuel Type:</strong> ${station.fuel_type}</div>` : ''}
                                 ${station.address ? `<div><strong>Address:</strong> ${station.address}</div>` : ''}
                                 <div style="margin-top: 8px;">
-                                    <button onclick="mapper.addStop('${displayName.replace(/'/g, '')}', ${station.lat}, ${station.lon}, { fuelStation: true })" 
-                                            style="padding: 4px 8px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                    <button onclick="optimizer.addStop('${displayName.replace(/'/g, '')}', ${station.lat}, ${station.lon}, { fuelStation: true })" 
+                                            style="padding: 4px 8px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px;">
                                         Add as Stop
                                     </button>
                                 </div>
@@ -1063,21 +1377,17 @@
                 if (routeData.geometry.type === 'MultiLineString') {
                     routeData.geometry.coordinates.forEach(lineString => {
                         lineString.forEach(coord => {
-                            coordinates.push([coord[1], coord[0]]); // Convert [lon, lat] to [lat, lon]
+                            coordinates.push([coord[1], coord[0]]);
                         });
                     });
                 } else if (routeData.geometry.type === 'LineString') {
                     coordinates = routeData.geometry.coordinates.map(coord => [coord[1], coord[0]]);
-                } else {
-                    console.error('Unsupported geometry type:', routeData.geometry.type);
-                    return;
                 }
                 
                 this.routeLine = L.polyline(coordinates, {
-                    color: '#4285f4',
-                    weight: 5,
-                    opacity: 0.8,
-                    dashArray: '10,5'
+                    color: '#3b82f6',
+                    weight: 4,
+                    opacity: 0.8
                 }).addTo(this.map);
                 
                 this.map.fitBounds(this.routeLine.getBounds().pad(0.1));
@@ -1088,21 +1398,22 @@
                     this.map.removeLayer(this.routeLine);
                     this.routeLine = null;
                 }
-                this.routeFuelStations = [];
-                document.getElementById('instructions').innerHTML = '<p style="color: #718096; text-align: center;">Add at least 2 stops to see directions</p>';
+                this.fuelStations = [];
             }
             
             updateRouteInfo(routeData) {
                 const distance = routeData.distance.toFixed(1);
                 const duration = Math.round(routeData.duration);
                 const distanceMiles = distance * 0.621371;
-                const fuelNeeded = distanceMiles / this.vehicleConfig.avgMPG;
+                const fuelNeeded = distanceKm / this.vehicleConfig.avgKMPL;
                 const fuelCost = fuelNeeded * this.vehicleConfig.fuelPrice;
                 
                 document.getElementById('route-distance').textContent = `${distance} km`;
                 document.getElementById('route-duration').textContent = `${duration} min`;
-                document.getElementById('fuel-cost').textContent = `$${fuelCost.toFixed(2)}`;
-                document.getElementById('fuel-efficiency').innerHTML = `${this.vehicleConfig.avgMPG} <span style="font-size:12px;">MPG</span>`;
+                document.getElementById('fuel-cost').textContent = '₹' + fuelCost.toFixed(2);
+                document.getElementById('fuel-efficiency').innerHTML = this.vehicleConfig.avgKMPL + 
+    '<span style="font-size:12px">KMPL</span>';
+
                 document.getElementById('route-info').style.display = 'block';
                 
                 this.updateStats();
@@ -1112,12 +1423,24 @@
                 const instructionsDiv = document.getElementById('instructions');
                 const instructions = routeData.instructions || [];
                 
+                if (instructions.length === 0) {
+                    instructionsDiv.innerHTML = `
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <polygon points="3,11 22,2 13,21 11,13 3,11"></polygon>
+                            </svg>
+                            <p>No detailed instructions available</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
                 let instructionsHtml = '';
                 instructions.forEach((instruction, index) => {
                     instructionsHtml += `
-                        <div class="instruction-step" style="padding: 8px 0; border-bottom: 1px solid #eee;">
-                            <div style="font-weight: 500;">${instruction.text}</div>
-                            <div class="step-distance" style="font-size: 12px; color: #666;">${instruction.distance.toFixed(1)} km</div>
+                        <div class="instruction-step">
+                            <div>${instruction.text}</div>
+                            <div class="step-distance">${instruction.distance.toFixed(1)} km</div>
                         </div>
                     `;
                 });
@@ -1125,117 +1448,54 @@
                 instructionsDiv.innerHTML = instructionsHtml;
             }
             
-            displayRouteFuelStations() {
+            displayFuelStations() {
                 const fuelStationsDiv = document.getElementById('fuel-stations');
                 fuelStationsDiv.innerHTML = '';
                 
-                if (this.routeFuelStations.length === 0) {
-                    fuelStationsDiv.innerHTML = '<p style="color: #718096; text-align: center;">No fuel pumps found along the route</p>';
+                if (this.fuelStations.length === 0) {
+                    fuelStationsDiv.innerHTML = `
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M3 12h18l-3-3m0 6l3-3"></path>
+                            </svg>
+                            <p>No fuel stations found along the route</p>
+                        </div>
+                    `;
                     return;
                 }
                 
                 const title = document.createElement('div');
-                title.innerHTML = `<strong><i class="fas fa-gas-pump"></i> Found ${this.routeFuelStations.length} fuel pumps along route</strong>`;
-                title.style.marginBottom = '10px';
-                title.style.color = '#2d3748';
-                title.style.fontSize = '14px';
+                title.innerHTML = `<strong style="color: #1e293b; display: block; margin-bottom: 12px;">Found ${this.fuelStations.length} fuel stations along route</strong>`;
                 fuelStationsDiv.appendChild(title);
                 
-                // Show fuel stations with enhanced information
-                this.routeFuelStations.slice(0, 12).forEach((station, index) => {
+                this.fuelStations.slice(0, 10).forEach((station, index) => {
                     const div = document.createElement('div');
-                    div.className = 'fuel-station route-station';
+                    div.className = 'fuel-station';
                     
                     const displayName = (station.brand && station.brand !== station.name) ? station.brand : station.name;
                     
                     div.innerHTML = `
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div style="flex: 1;">
-                                <div style="font-weight: 500; display: flex; align-items: center; gap: 5px;">
-                                    <i class="fas fa-gas-pump" style="color: #e74c3c; font-size: 12px;"></i>
-                                    ${displayName}
-                                    <span style="background: #4285f4; color: white; font-size: 9px; padding: 2px 4px; border-radius: 8px;">ROADSIDE</span>
-                                </div>
-                                <div style="font-size: 11px; color: #666; margin-top: 2px;">
+                                <div style="font-weight: 600; color: #1e293b; margin-bottom: 4px;">⛽ ${displayName}</div>
+                                <div style="font-size: 12px; color: #64748b;">
                                     ${station.distance_from_route.toFixed(1)} km from route
                                     ${station.fuel_type ? ` • ${station.fuel_type}` : ''}
                                 </div>
-                                ${station.address ? `<div style="font-size: 10px; color: #888;">${station.address}</div>` : ''}
+                                ${station.address ? `<div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">${station.address}</div>` : ''}
                             </div>
-                            <div class="fuel-price" style="text-align: right;">
-                                <div style="font-weight: 600; color: #2b6cb0;">$${station.price.toFixed(2)}</div>
-                                <div style="font-size: 10px; color: #666;">per gal</div>
+                            <div style="text-align: right;">
+                                <div class="fuel-price">$${station.price.toFixed(2)}</div>
+                                <div style="font-size: 10px; color: #64748b;">per gal</div>
                             </div>
                         </div>
                     `;
                     
                     div.onclick = () => {
-                        const confirmAdd = confirm(`Add ${displayName} fuel pump as a stop?`);
+                        const confirmAdd = confirm(`Add ${displayName} as a stop?`);
                         if (confirmAdd) {
                             this.addStop(displayName, station.lat, station.lon, { fuelStation: true });
-                            this.showAlert(`Added fuel pump: ${displayName}`, 'success');
-                        }
-                    };
-                    
-                    fuelStationsDiv.appendChild(div);
-                });
-                
-                // Add "show more" option if there are many stations
-                if (this.routeFuelStations.length > 12) {
-                    const showMoreDiv = document.createElement('div');
-                    showMoreDiv.innerHTML = `
-                        <p style="text-align: center; color: #4285f4; cursor: pointer; padding: 10px; font-size: 12px;">
-                            <i class="fas fa-chevron-down"></i> Show ${this.routeFuelStations.length - 12} more fuel pumps
-                        </p>
-                    `;
-                    showMoreDiv.onclick = () => this.displayAllRouteFuelStations();
-                    fuelStationsDiv.appendChild(showMoreDiv);
-                }
-            }
-            
-            displayAllRouteFuelStations() {
-                // Similar implementation as displayRouteFuelStations but for all stations
-                const fuelStationsDiv = document.getElementById('fuel-stations');
-                fuelStationsDiv.innerHTML = '';
-                
-                const title = document.createElement('div');
-                title.innerHTML = `<strong><i class="fas fa-gas-pump"></i> All ${this.routeFuelStations.length} fuel pumps along route</strong>`;
-                title.style.marginBottom = '10px';
-                title.style.color = '#2d3748';
-                title.style.fontSize = '14px';
-                fuelStationsDiv.appendChild(title);
-                
-                this.routeFuelStations.forEach((station, index) => {
-                    const div = document.createElement('div');
-                    div.className = 'fuel-station route-station';
-                    
-                    const displayName = (station.brand && station.brand !== station.name) ? station.brand : station.name;
-                    
-                    div.innerHTML = `
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div style="flex: 1;">
-                                <div style="font-weight: 500; display: flex; align-items: center; gap: 5px;">
-                                    <i class="fas fa-gas-pump" style="color: #e74c3c; font-size: 12px;"></i>
-                                    ${displayName}
-                                </div>
-                                <div style="font-size: 11px; color: #666; margin-top: 2px;">
-                                    ${station.distance_from_route.toFixed(1)} km from route
-                                    ${station.fuel_type ? ` • ${station.fuel_type}` : ''}
-                                </div>
-                                ${station.address ? `<div style="font-size: 10px; color: #888;">${station.address}</div>` : ''}
-                            </div>
-                            <div class="fuel-price" style="text-align: right;">
-                                <div style="font-weight: 600; color: #2b6cb0;">$${station.price.toFixed(2)}</div>
-                                <div style="font-size: 10px; color: #666;">per gal</div>
-                            </div>
-                        </div>
-                    `;
-                    
-                    div.onclick = () => {
-                        const confirmAdd = confirm(`Add ${displayName} fuel pump as a stop?`);
-                        if (confirmAdd) {
-                            this.addStop(displayName, station.lat, station.lon, { fuelStation: true });
-                            this.showAlert(`Added fuel pump: ${displayName}`, 'success');
+                            this.showAlert(`Added fuel station: ${displayName}`, 'success');
                         }
                     };
                     
@@ -1245,7 +1505,7 @@
             
             async optimizeRoute() {
                 if (this.stops.length < 3) {
-                    alert('Need at least 3 stops to optimize route');
+                    this.showAlert('Need at least 3 stops to optimize route', 'warning');
                     return;
                 }
                 
@@ -1268,33 +1528,23 @@
                     
                     if (data.success) {
                         if (data.waypoints_order) {
-                            // Apply the optimized order
                             const optimizedStops = data.waypoints_order.map(index => this.stops[index]);
                             this.stops = optimizedStops;
                             this.updateStopsList();
                             this.updateMarkers();
                             this.calculateRoute();
                             this.showAlert('Route optimized successfully!', 'success');
-                        } else {
-                            this.currentRoute = data;
-                            this.drawRoute(data);
-                            this.updateRouteInfo(data);
-                            this.showTurnByTurnDirections(data);
                         }
                     }
                 } catch (error) {
                     console.error('Route optimization error:', error);
+                    this.showAlert('Route optimization failed', 'error');
                 }
             }
             
             updateStats() {
-                const totalDistance = this.currentRoute ? this.currentRoute.distance.toFixed(1) : '0';
-                const totalTime = this.currentRoute ? Math.round(this.currentRoute.duration) : '0';
-                const totalCost = this.currentRoute ? (this.currentRoute.distance * 0.621371 / this.vehicleConfig.avgMPG * this.vehicleConfig.fuelPrice).toFixed(2) : '0';
-                
-                document.getElementById('total-distance').textContent = `${totalDistance} km`;
-                document.getElementById('total-time').textContent = `${totalTime} min`;
-                document.getElementById('total-fuel-cost').textContent = `$${totalCost}`;
+                // This would typically update header stats
+                // Implementation depends on your requirements
             }
             
             getCsrfToken() {
@@ -1306,8 +1556,22 @@
             }
         }
         
-        // Initialize the mapper
-        const mapper = new SmartFleetMapper();
+        // Initialize the route optimizer
+        const optimizer = new RouteOptimizer();
+        
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>

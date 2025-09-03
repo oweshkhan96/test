@@ -39,7 +39,7 @@
                                 <th>Fuel Type</th>
                                 <th>Assigned Driver</th>
                                 <th>Tank Capacity</th>
-                                <th>Average MPG</th>
+                                <th>Average kmpl</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -60,8 +60,8 @@
                                         <em class="text-muted">Not assigned</em>
                                     {% endif %}
                                 </td>
-                                <td>{{ vehicle.tank_capacity }} gal</td>
-                                <td>{{ vehicle.average_mpg }} mpg</td>
+                                <td>{{ vehicle.tank_capacity }} Litre</td>
+                                <td>{{ vehicle.averagekmpl }} km/L</td>
                                 <td>
                                     {% if vehicle.is_active %}
                                         <span class="badge bg-success">Active</span>
